@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Make account</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <h2>Make new account</h2>
+
+    <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+    <% } %>
+
     <form action="/register" method="POST">
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required><br><br>
