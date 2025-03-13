@@ -31,6 +31,33 @@ const users = {
     }
   });
 
+  app.get("/register", (req, res) => {
+    res.render("register", { error: null });
+});
+
+  //Håndterer bruger oprettelse 
+  app.post("/register", (req, res) => {
+    const { username, email, password } = req.body;
+
+    // Tjek om brugeren allerede findes
+    if (users[username]) {
+        return res.render("register", { error: "Username taken" });
+    }
+    // Tjek om email allerede findes
+    for (let user in users) {
+        if (users[user].email === email) {
+            return res.render("register", { error: "E-mail taken" });
+        }
+    }
+
+    // Gem den nye bruger
+    users[username] = { email, password };
+    console.log("Ny bruger oprettet:", users);
+    
+    res.redirect("/");
+});
+
+
   // Håndter login
   app.post('/login', (req, res) => {
     const { username, password } = req.body;
