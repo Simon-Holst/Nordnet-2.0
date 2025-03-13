@@ -35,6 +35,7 @@ const users = {
     res.render("register", { error: null });
 });
 
+
   //Håndterer bruger oprettelse 
   app.post("/register", (req, res) => {
     const { username, email, password } = req.body;
@@ -79,6 +80,14 @@ const users = {
     res.render('dashboard', { username: req.session.username });
   });
   
+  app.get("/portfolios", (req, res) => {
+    res.render("portfolios", { error: null });
+});
+
+app.get("/accounts", (req, res) => {
+  res.render("accounts", { error: null });
+});
+
   // Logout
   app.get('/logout', (req, res) => {
     req.session.destroy(() => {
