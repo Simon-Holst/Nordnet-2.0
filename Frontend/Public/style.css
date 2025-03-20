@@ -38,16 +38,14 @@ body {
     color: #fff;
 }
 
-.logout-btn {
-    margin-top: auto;
-    color: #ff5757;
-}
-
-
 .top-cards {
     display: flex;
     gap: 20px;
     margin-bottom: 100px;
+}
+
+.logout-btn {
+    margin-top: auto;
 }
 
 .card {
@@ -117,4 +115,6 @@ label {
     display: block;
     margin-bottom: 5px;
 }
+
+
 
