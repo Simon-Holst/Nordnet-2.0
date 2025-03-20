@@ -57,18 +57,15 @@ body {
     width: 180px;
     text-align: center;
 }
-
 .card-title {
     font-size: 14px;
     color: #b0b0b0;
 }
-
 .card-value {
     font-size: 20px;
     font-weight: bold;
     margin-top: 5px;
 }
-
 
 .table-container {
     margin-top: 20px;
@@ -99,4 +96,25 @@ tr:hover {
 
 h1{
     margin-bottom: 20px;
+    text-align: center;
 }
+
+form{
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    margin: 0 auto; /* Center formularen horisontalt */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+h3{
+    text-align: center;
+}
+
+label {
+    color: #b0b0b0;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
