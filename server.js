@@ -18,8 +18,8 @@ app.use(session({
 
 // Midlertidig data brugerdatabase
 const users = {
-    admin: '1234',
-    user: 'pass'
+    admin: {email: "admin@gmail.com", password: '1234'},
+    user: {email: "user@gmail.com", password: 'pass'}
   };
 
   // Login-side
@@ -63,7 +63,7 @@ const users = {
   app.post('/login', (req, res) => {
     const { username, password } = req.body;
   
-    if (users[username] && users[username] === password) {
+    if (users[username] && users[username].password === password) {
       req.session.loggedIn = true;
       req.session.username = username;
       res.redirect('/dashboard'); // Gå til dashboard
