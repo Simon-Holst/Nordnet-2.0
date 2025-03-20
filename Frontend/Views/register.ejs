@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h2>Make new account</h2>
+   
 
     <% if (error) { %>
         <p style="color: red;"><%= error %></p>
     <% } %>
 
     <form action="/register" method="POST">
+        <h3>Make new account</h3>
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required><br><br>
 
@@ -23,9 +24,9 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br><br>
 
-        <button type="submit">register account</button>
+        <button type="submit">Register account</button>
+        <p>All ready have an account? <a href="/">Log in here</a></p>
     </form>
 
-    <p>All ready have an account? <a href="/">Log in here</a></p>
 </body>
 </html>
