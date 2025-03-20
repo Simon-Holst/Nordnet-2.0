@@ -8,6 +8,15 @@
 </head>
 <body>
 
+
+    <button id="toggleSidebar">☰ Menu</button>
+
+    <script>
+        document.getElementById("toggleSidebar").addEventListener("click", function () {
+            document.querySelector(".sidebar").classList.toggle("hidden");
+        });
+    </script>
+
     <div class="sidebar">
         <h2>PortfolioTracker</h2>
         <a href="/dashboard">Dashboard</a>
