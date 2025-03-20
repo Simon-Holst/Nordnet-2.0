@@ -7,13 +7,49 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="topnav">
-        <a href= /dashboard>Dashboard</a>
-        <a href=/accounts>Accounts</a>
-        <a href= /portfolios>Portfolios</a>
+
+    <div class="sidebar">
+        <h2>PortfolioTracker</h2>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/accounts">Accounts</a>
+        <a href="/portfolios">Portfolios</a>
+        <a href="/logout" class="logout-btn">Log out</a>
     </div>
 
-    <h1>Velkommen, <%= username %></h1>
-    <a href="/logout">Log ud</a>
+    <div class="main-content">
+        <h1>Velkommen, <%= username %> 👋</h1>
+    
+        <div class="top-cards">
+            <div class="card">
+                <p class="card-title">Total værdi</p>
+                <p class="card-value" id="total-value">-</p>
+            </div>
+            <div class="card">
+                <p class="card-title">Realiseret gevinst</p>
+                <p class="card-value" id="realized-profit">-</p>
+            </div>
+            <div class="card">
+                <p class="card-title">Urealiseret gevinst</p>
+                <p class="card-value" id="unrealized-profit">-</p>
+            </div>
+        </div>
+
+    <div class="table-container">
+        <h2>Top 5 værdipapirer</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Navn</th>
+                    <th>Portfolio</th>
+                    <th>24h Ændring</th>
+                    <th>Værdi</th>
+                </tr>
+            </thead>
+            <tbody id="stocks-table">
+                <!-- Data hentes dynamisk -->
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>
