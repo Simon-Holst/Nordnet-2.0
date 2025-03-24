@@ -26,6 +26,8 @@ body {
     transform: translateX(0); /* Når den vises */
 }
 
+
+
 .sidebar h2 {
     font-size: 18px;
     margin-bottom: 20px;
@@ -143,3 +145,4 @@ label {
 #toggleSidebar:hover {
     background-color: #444;
 }
+

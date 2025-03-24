@@ -11,11 +11,17 @@
 
     <button id="toggleSidebar">☰ Menu</button>
 
-    <script>
+      <script>
+    document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("toggleSidebar").addEventListener("click", function () {
             document.querySelector(".sidebar").classList.toggle("hidden");
         });
-    </script>
+
+        document.getElementById("closeSidebar").addEventListener("click", function () {
+            document.querySelector(".sidebar").classList.toggle("hidden");
+        });
+    });
+</script>
 
     <div class="sidebar">
         <h2>PortfolioTracker</h2>
@@ -23,6 +29,7 @@
         <a href="/accounts">Accounts</a>
         <a href="/portfolios">Portfolios</a>
         <a href="/logout" class="logout-btn">Log out</a>
+        <button id="closeSidebar">x Luk</button>
     </div>
 
     <div class="main-content">
