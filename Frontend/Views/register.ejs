@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Make account</title>
     <link rel="stylesheet" href="/style.css">
+
 </head>
 <body>
    
-
     <% if (error) { %>
         <p style="color: red;"><%= error %></p>
     <% } %>
 
-    <form action="/register" method="POST">
+    <form id="registerForm">
         <h3>Make new account</h3>
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required><br><br>
@@ -28,5 +28,10 @@
         <p>All ready have an account? <a href="/">Log in here</a></p>
     </form>
 
+    <script type="module">
+        import { handleRegister } from '/js/auth.js';
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    </script>
+    
 </body>
 </html>
