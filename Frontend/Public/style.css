@@ -7,7 +7,6 @@ body {
     display: flex;
 }
 
-
 .sidebar {
     width: 200px;
     height: 90vh;
@@ -16,7 +15,18 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%); /* Start position (skjult) */
+    transition: transform 0.3s ease-in-out;
 }
+
+.sidebar.hidden {
+    transform: translateX(0); /* Når den vises */
+}
+
+
 
 .sidebar h2 {
     font-size: 18px;
@@ -55,10 +65,12 @@ body {
     width: 180px;
     text-align: center;
 }
+
 .card-title {
     font-size: 14px;
     color: #b0b0b0;
 }
+
 .card-value {
     font-size: 20px;
     font-weight: bold;
@@ -92,12 +104,12 @@ tr:hover {
     background-color: #292929;
 }
 
-h1{
+h1 {
     margin-bottom: 20px;
     text-align: center;
 }
 
-form{
+form {
     background-color: #1e1e1e;
     padding: 20px;
     border-radius: 8px;
@@ -105,7 +117,8 @@ form{
     margin: 0 auto; /* Center formularen horisontalt */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-h3{
+
+h3 {
     text-align: center;
 }
 
@@ -116,8 +129,24 @@ label {
     margin-bottom: 5px;
 }
 
+/* Knappen til at togglesidebaren */
+#toggleSidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
 
 .sidebar-logo img {
     width: 40px; 
     height: 40px;
 }
+#toggleSidebar:hover {
+    background-color: #444;
+}
+
