@@ -10,6 +10,7 @@ app.use(express.static("Frontend/Public")); // Gør det muligt at hente css styl
 
 //Middleware
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
 app.use(session({
     secret: "Hemmelig_nøgle",
     resave: false,
@@ -25,9 +26,9 @@ const users = {
   // Login-side
   app.get('/', (req, res) => {
     if (req.session.loggedIn) {
-      res.redirect('/dashboard'); // Hvis brugeren er logget ind, send til dashboard
+      res.redirect('/dashboard');
     } else {
-      res.render('login', { error: null }); // Render login-siden
+      res.render('login', { error: null });
     }
   });
 
@@ -42,12 +43,12 @@ const users = {
 
     // Tjek om brugeren allerede findes
     if (users[username]) {
-        return res.render("register", { error: "Username taken" });
+      return res.status(400).json({ error: "Username taken" });
     }
     // Tjek om email allerede findes
     for (let user in users) {
         if (users[user].email === email) {
-            return res.render("register", { error: "E-mail taken" });
+          return res.status(400).json({ error: "E-mail taken" });
         }
     }
 
@@ -55,7 +56,7 @@ const users = {
     users[username] = { email, password };
     console.log("Ny bruger oprettet:", users);
     
-    res.redirect("/");
+    res.json({ message: "User registered" });
 });
 
 
@@ -66,9 +67,9 @@ const users = {
     if (users[username] && users[username].password === password) {
       req.session.loggedIn = true;
       req.session.username = username;
-      res.redirect('/dashboard'); // Gå til dashboard
+      res.json({ message: "Login successful" });
     } else {
-      res.render('login', { error: 'Wrong username or password' });
+      res.status(401).json({ error: 'Wrong username or password' });
     }
   });
   
