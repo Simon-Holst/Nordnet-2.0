@@ -11,18 +11,6 @@
 
     <button id="toggleSidebar">☰ Menu</button>
 
-      <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("toggleSidebar").addEventListener("click", function () {
-            document.querySelector(".sidebar").classList.toggle("hidden");
-        });
-
-        document.getElementById("closeSidebar").addEventListener("click", function () {
-            document.querySelector(".sidebar").classList.toggle("hidden");
-        });
-    });
-</script>
-
     <div class="sidebar">
         <h2>PortfolioTracker</h2>
         <a href="/dashboard" class="sidebar-logo"> <img src="/Dashboard-logo.png" alt="Dashboard Logo">Dashboard</a>
@@ -31,5 +19,6 @@
         <a href="/logout" class="logout-btn">Log out</a>
         <button id="closeSidebar"> Luk</button>
     </div>
+    <script src="/js/sidebar.js"></script>
 </body>
 </html>
