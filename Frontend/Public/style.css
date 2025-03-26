@@ -150,3 +150,8 @@ label {
     background-color: #444;
 }
 
+.main-content{
+    margin-left: 200px;
+    padding: 20px;
+    width: 100%;
+}
