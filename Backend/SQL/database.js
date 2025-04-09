@@ -1,14 +1,14 @@
 const sql = require('mssql');
 
 const config = {
-    user: 'mathias-beck',
+    user: 'mathias-bech',
     password: 'programmering123',
     server: 'myserver.database.windows.net',
     database: 'mydatabase',
-    option : {
+    options : {
         encrypt: true, // For Azure
         trustServerCertificate: false // For Azure
-    };
+    }
 };
 
 const poolPromise = new sql.ConnectionPool(config)
@@ -21,7 +21,7 @@ const poolPromise = new sql.ConnectionPool(config)
         console.error('Database connection failed:', err);
     });
 
-modeule.exports = {
+module.exports = {
     sql,
     poolPromise
 };
