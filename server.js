@@ -2,20 +2,22 @@ const express = require("express")
 const app = express()
 const port = 3000
 const session = require("express-session")
-const bodyParser = require("body-parser")
+const authRoutes = require("./Backend/routes/authRoutes.js")
 
 app.set("view engine", "ejs"); // Bruger EJS til at gengive HTML
 app.set("views", __dirname + "/Frontend/Views");
 app.use(express.static("Frontend/Public")); // Gør det muligt at hente css style fra vores public mappe 
+app.use(express.urlencoded({ extended: true })); 
 
 //Middleware
-app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(session({
     secret: "Hemmelig_nøgle",
     resave: false,
     saveUninitialized: true,
 }))
+
+app.use("/api/auth", authRoutes);
 
 // Midlertidig data brugerdatabase
 const users = {
