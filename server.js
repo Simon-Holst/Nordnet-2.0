@@ -19,12 +19,6 @@ app.use(session({
 
 app.use("/api/auth", authRoutes);
 
-// Midlertidig data brugerdatabase
-const users = {
-    admin: {email: "admin@gmail.com", password: '1234'},
-    user: {email: "user@gmail.com", password: 'pass'}
-  };
-
   // Login-side
   app.get('/', (req, res) => {
     if (req.session.loggedIn) {
@@ -39,41 +33,6 @@ const users = {
 });
 
 
-  //Håndterer bruger oprettelse 
-  app.post("/register", (req, res) => {
-    const { username, email, password } = req.body;
-
-    // Tjek om brugeren allerede findes
-    if (users[username]) {
-      return res.status(400).json({ error: "Username taken" });
-    }
-    // Tjek om email allerede findes
-    for (let user in users) {
-        if (users[user].email === email) {
-          return res.status(400).json({ error: "E-mail taken" });
-        }
-    }
-
-    // Gem den nye bruger
-    users[username] = { email, password };
-    console.log("Ny bruger oprettet:", users);
-    
-    res.json({ message: "User registered" });
-});
-
-
-  // Håndter login
-  app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-  
-    if (users[username] && users[username].password === password) {
-      req.session.loggedIn = true;
-      req.session.username = username;
-      res.json({ message: "Login successful" });
-    } else {
-      res.status(401).json({ error: 'Wrong username or password' });
-    }
-  });
   
   // Dashboard-side
   app.get('/dashboard', (req, res) => {
