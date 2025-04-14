@@ -2,9 +2,9 @@ const sql = require('mssql');
 
 const config = {
     user: 'mathias-bech',
-    password: 'programmering123',
-    server: 'myserver.database.windows.net',
-    database: 'mydatabase',
+    password: 'programmering1234!',
+    server: 'mathias-bech.database.windows.net',
+    database: 'Prog - Database',
     options : {
         encrypt: true, // For Azure
         trustServerCertificate: false // For Azure
