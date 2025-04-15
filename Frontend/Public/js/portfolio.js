@@ -59,5 +59,84 @@ async function loadPortfolios() {
     });
 }
 
-loadAccounts();
-loadPortfolios();
+// Indlæs konti til trade-modal
+async function loadAccountsToModal() {
+    const res = await fetch('/api/accounts');
+    const accounts = await res.json();
+    const select = document.getElementById('account');
+    select.innerHTML = '';
+    accounts
+        .filter(acc => !acc.Closed_at)
+        .forEach(acc => {
+            const option = document.createElement('option');
+            option.value = acc.account_id;
+            option.textContent = acc.name;
+            select.appendChild(option);
+        });
+}
+
+// Indlæs porteføljer til trade-modal
+async function loadPortfoliosToModal() {
+    const res = await fetch('/api/portfolios');
+    const portfolios = await res.json();
+    const select = document.getElementById('portfolio');
+    select.innerHTML = '';
+    portfolios.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.portfolio_id;
+        option.textContent = p.name;
+        select.appendChild(option);
+    });
+}
+
+// Modal: åbn
+document.getElementById('openTradeModal').addEventListener('click', () => {
+    document.getElementById('tradeModal').style.display = 'block';
+});
+
+// Modal: luk
+document.getElementById('closeTradeModal').addEventListener('click', () => {
+    document.getElementById('tradeModal').style.display = 'none';
+});
+
+// Submit trade
+document.getElementById('tradeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const payload = {
+        accountId: parseInt(document.getElementById('account').value),
+        portfolioId: parseInt(document.getElementById('portfolio').value),
+        trade_type: document.getElementById('trade_type').value,
+        ticker_symbol: document.getElementById('ticker_symbol').value,
+        security_type: document.getElementById('security_type').value,
+        quantity: parseFloat(document.getElementById('quantity').value),
+        total_price: parseFloat(document.getElementById('total_price').value),
+        fee: parseFloat(document.getElementById('fee').value),
+    };
+
+    try {
+        const res = await fetch('/api/trades', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        alert(result.message);
+        if (res.ok) {
+            document.getElementById('tradeModal').style.display = 'none';
+            location.reload();
+        }
+    } catch (err) {
+        console.error('Trade error:', err);
+        alert('Something went wrong submitting the trade.');
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadAccounts();
+    loadPortfolios();
+    loadAccountsToModal();
+    loadPortfoliosToModal();
+});

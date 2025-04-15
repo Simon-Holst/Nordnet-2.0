@@ -6,6 +6,7 @@ const authRoutes = require("./Backend/routes/authRoutes.js")
 const accountRoutes = require('./Backend/routes/accountsRoutes');
 const transactionRoutes = require('./Backend/routes/transactionRoutes.js');
 const portfoliosRoutes = require('./Backend/routes/portfoliosRoutes.js');
+const tradeRoutes = require('./Backend/routes/tradeRoutes.js');
 
 app.set("view engine", "ejs"); // Bruger EJS til at gengive HTML
 app.set("views", __dirname + "/Frontend/Views");
@@ -24,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
+app.use("/api/trade", tradeRoutes);
 
   // Login-side
   app.get('/', (req, res) => {
