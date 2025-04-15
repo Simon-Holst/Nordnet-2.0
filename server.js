@@ -2,11 +2,13 @@ const express = require("express")
 const app = express()
 const port = 3000
 const session = require("express-session")
+
 const authRoutes = require("./Backend/routes/authRoutes.js")
 const accountRoutes = require('./Backend/routes/accountsRoutes');
 const transactionRoutes = require('./Backend/routes/transactionRoutes.js');
 const portfoliosRoutes = require('./Backend/routes/portfoliosRoutes.js');
 const tradeRoutes = require('./Backend/routes/tradeRoutes.js');
+const stockRoutes = require('./Backend/routes/stockRoutes.js');
 
 app.set("view engine", "ejs"); // Bruger EJS til at gengive HTML
 app.set("views", __dirname + "/Frontend/Views");
@@ -26,6 +28,7 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/api/trade", tradeRoutes);
+app.use("/api/stocks", stockRoutes);
 
   // Login-side
   app.get('/', (req, res) => {
