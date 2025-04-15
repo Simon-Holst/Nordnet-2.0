@@ -3,6 +3,9 @@ const app = express()
 const port = 3000
 const session = require("express-session")
 const authRoutes = require("./Backend/routes/authRoutes.js")
+const accountRoutes = require('./Backend/routes/accountsRoutes');
+const transactionRoutes = require('./Backend/routes/transactionRoutes.js');
+const portfoliosRoutes = require('./Backend/routes/portfoliosRoutes.js');
 
 app.set("view engine", "ejs"); // Bruger EJS til at gengive HTML
 app.set("views", __dirname + "/Frontend/Views");
@@ -18,6 +21,9 @@ app.use(session({
 }))
 
 app.use("/api/auth", authRoutes);
+app.use("/api/accounts", accountRoutes);
+app.use("/api/transactions", transactionRoutes);
+app.use("/api/portfolios", portfoliosRoutes);
 
   // Login-side
   app.get('/', (req, res) => {
@@ -31,7 +37,6 @@ app.use("/api/auth", authRoutes);
   app.get("/register", (req, res) => {
     res.render("register", { error: null });
 });
-
 
   
   // Dashboard-side
