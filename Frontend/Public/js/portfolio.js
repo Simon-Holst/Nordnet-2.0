@@ -140,3 +140,32 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAccountsToModal();
     loadPortfoliosToModal();
 });
+
+const searchInput = document.getElementById('search-stock');
+const suggestions = document.getElementById('stock-suggestions');
+const tickerInput = document.getElementById('ticker_symbol');
+
+searchInput.addEventListener('input', async (e) => {
+  const query = e.target.value.trim();
+  if (query.length < 2) return (suggestions.innerHTML = '');
+
+  const res = await fetch(`/api/stocks/search?q=${query}`);
+  const matches = await res.json();
+
+  suggestions.innerHTML = '';
+  matches.forEach(stock => {
+    const li = document.createElement('li');
+    li.textContent = `${stock.name} (${stock.symbol})`;
+    li.addEventListener('click', async () => {
+      searchInput.value = `${stock.name} (${stock.symbol})`;
+      tickerInput.value = stock.symbol;
+      suggestions.innerHTML = '';
+
+      // Hent aktuel pris og sæt i total_price input
+      const priceRes = await fetch(`/api/stocks/${stock.symbol}`);
+      const priceData = await priceRes.json();
+      document.getElementById('total_price').value = priceData.price;
+    });
+    suggestions.appendChild(li);
+  });
+});
