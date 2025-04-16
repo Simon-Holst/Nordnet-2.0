@@ -9,8 +9,11 @@ async function getCurrentStockPrice(symbol) {
   const url = `${BASE_URL}?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${API_KEY}`;
 
   try {
+    console.log("Calling Alpha Vantage with URL:", url);
     const response = await fetch(url);
     const data = await response.json();
+
+   
 
     const timeseries = data['Time Series (5min)'];
     if (!timeseries) throw new Error('No data returned');
@@ -24,10 +27,11 @@ async function getCurrentStockPrice(symbol) {
       time: latest,
     };
   } catch (err) {
-    console.error('Fejl i stockService:', err.message);
+    console.error('Error in stockService:', err.message);
     throw err;
   }
 }
+
 
 module.exports = {
   getCurrentStockPrice,
