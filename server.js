@@ -2,6 +2,8 @@ const express = require("express")
 const app = express()
 const port = 3000
 const session = require("express-session")
+require('dotenv').config();
+
 
 const authRoutes = require("./Backend/routes/authRoutes.js")
 const accountRoutes = require('./Backend/routes/accountsRoutes');

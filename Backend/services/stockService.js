@@ -1,38 +1,30 @@
-
 const fetch = require('node-fetch');
 require('dotenv').config();
 
-const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
-const BASE_URL = 'https://www.alphavantage.co/query';
+const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY;
 
-async function getCurrentStockPrice(symbol) {
-  const url = `${BASE_URL}?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&apikey=${API_KEY}`;
-
+async function getCurrentStockPrice(ticker) {
   try {
-    console.log("Calling Alpha Vantage with URL:", url);
+    const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
     const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Finnhub API error: ${response.status}`);
+    }
+
     const data = await response.json();
 
-   
-
-    const timeseries = data['Time Series (5min)'];
-    if (!timeseries) throw new Error('No data returned');
-
-    const latest = Object.keys(timeseries)[0];
-    const latestData = timeseries[latest];
-
     return {
-      symbol,
-      price: parseFloat(latestData['4. close']),
-      time: latest,
+      symbol: ticker,
+      price: data.c,
+      time: new Date(data.t * 1000).toISOString()
     };
-  } catch (err) {
-    console.error('Error in stockService:', err.message);
-    throw err;
+  } catch (error) {
+    console.error('Error fetching stock price:', error.message);
+    throw error;
   }
 }
 
-
 module.exports = {
-  getCurrentStockPrice,
+  getCurrentStockPrice
 };

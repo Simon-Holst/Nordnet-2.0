@@ -55,7 +55,6 @@
             </table>
         </div>
     </div>
-<script type="module" src="/js/portfolio.js"></script>
 
 <div id="tradeModal" class="modal" style="display: none;">
     <div class="modal-content">
@@ -75,7 +74,7 @@
         </select><br><br>
   
         <label for="search-stock">Search Stock:</label>
-        <input type="text" id="search-stock" name="search-stock" autocomplete="off" placeholder="e.g. Tesla, TSLA">
+        <input type="text" id="search-stock" name="search-stock" autocomplete="off" placeholder="f.eks. Tesla, TSLA">
         <ul id="stock-suggestions" class="suggestions-list"></ul>
         
         <!-- skjult felt der bliver udfyldt automatisk -->
@@ -87,15 +86,18 @@
         <label for="quantity">Quantity:</label>
         <input type="number" id="quantity" name="quantity" step="any" required><br><br>
   
-        
-        <input type="number" id="total_price" name="total_price" step="any" readonly>
-    
-        <input type="number" id="fee" name="fee" step="any" readonly>>
+        <label for="total_price">Total Price:</label>
+      <input type="number" id="total_price" name="total_price" step="any" readonly><br><br>
+
+      <label for="fee">Fee (0.5%):</label>
+      <input type="number" id="fee" name="fee" step="any" readonly><br><br>
   
         <button type="submit">Submit Trade</button>
       </form>
     </div>
   </div>
-  
+
+  <script src="/js/portfolio.js"></script>
+
 </body>
 </html>
