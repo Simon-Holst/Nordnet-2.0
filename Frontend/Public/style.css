@@ -2,8 +2,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #EDF4F2; 
-    color: #000000;
+    background-color: #181818; 
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,7 +13,7 @@ body {
 .sidebar {
     width: 20%;
     height: 100vh;
-    background-color: #31473A; 
+    background-color: #242424; 
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -30,15 +30,27 @@ body {
     transform: translateX(0);
 }
 
-.sidebar h2 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #fff;
-    text-align: center;
-    background-color: #253D2F;
-    padding: 15px;
+.sidebar-title-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, #4B3C8E, #7A5EC8);
+    padding: 8px 15px;
     border-radius: 4px;
-}
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-title-box h2 {
+    font-size: 20px;
+    color: #fff;
+    margin: 0;
+  }
+  
+  .sidebar-title-box img {
+    width: 50px;
+    height: 50px;
+    margin-right: 30px;
+  }
 
 .sidebar a {
     color: #ffffff;
@@ -51,6 +63,7 @@ body {
     transition: background-color 0.3s ease;
 }
 
+
 .sidebar a img {
     width: 30px;
     height: 30px;
@@ -58,7 +71,7 @@ body {
 }
 
 .sidebar a:hover {
-    background-color: rgb(7, 34, 12);
+    background-color: #7A5EC8;
 }
 
 .top-cards {
@@ -71,7 +84,7 @@ body {
 }
 
 .card {
-    background-color: #ffffff;
+    background-color: #242424; /*Genbruger sidebarfarven*/
     padding: 20px;
     border-radius: 8px;
     width: 200px;
@@ -81,14 +94,14 @@ body {
 
 .card-title {
     font-size: 14px;
-    color: #555;
+    color: white;
 }
 
 .card-value {
     font-size: 20px;
     font-weight: bold;
     margin-top: 5px;
-    color: #000;
+    color: white;
 }
 
 /* Styling for tabeller */
@@ -121,8 +134,8 @@ th, td {
 }
 
 th {
-    background-color: #e0e0e0;
-    color: #000;
+    background-color: #242424; /*Genbruger sidebarfarven*/
+    color: white;
 }
 
 tr:hover {
@@ -138,7 +151,7 @@ h1 {
     position: fixed;
     top: 20px;
     left: 20px;
-    background-color: #31473A;
+    background-color: #4B3C8E;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -148,7 +161,7 @@ h1 {
 }
 
 #toggleSidebar:hover {
-    background-color: #253D2F;
+    background-color: #7A5EC8;
 }
 
 .main-content {
