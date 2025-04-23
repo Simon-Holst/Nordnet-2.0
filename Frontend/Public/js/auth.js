@@ -1,59 +1,44 @@
-// Authenticator til at håndtere login
-export async function handleLogin(e){
-    e.preventDefault();
+// auth.js
 
-    const formData = {
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value
-    };
+export async function handleLogin(event) {
+    event.preventDefault();
 
-    try{
-        const response = await fetch("/login",{
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-        });
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-        const result = await response.json();
+    const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
 
-        if(response.ok){
-            window.location.href = "/dashboard"
-        } else{
-            alert(result.error || "Login failed")
-        }
-        } catch (error){
-            console.log("Login Error", error);
-            alert("Something went wrong");
-        };
-    };
-// Håndterer oprettelse af bruger
-export async function handleRegister(e){
-    e.preventDefault();
+    const data = await response.json();
 
-    const formData = {
-        email: document.getElementById("email").value,
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value
-    };
+    if (response.ok) {
+        window.location.href = '/dashboard';
+    } else {
+        alert(data.error || 'Login failed');
+    }
+}
 
-    try{
-        const response = await fetch("/register",{
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
-        });
+export async function handleRegister(event) {
+    event.preventDefault();
 
-        const result = await response.json();
+    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-        if(response.ok){
-            window.location.href = "/"
-        } else{
-            alert(result.error || "Registration failed")
-        }
-        } catch (error){
-            console.log("Register Error", error);
-            alert("Something went wrong");
-        };
-    
-    };
+    const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, username, password })
+    });
 
+    const data = await response.json();
+
+    if (response.ok) {
+        window.location.href = '/'; // Redirect til login
+    } else {
+        alert(data.error || 'Registration failed');
+    }
+}
