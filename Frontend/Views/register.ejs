@@ -11,7 +11,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: #31473A;
+            background: #181818;
             font-family: Arial, sans-serif;
             margin: 0;
         }
@@ -22,7 +22,8 @@
             width: 100%;
         }
         #registerForm {
-            background: white;
+            background: linear-gradient(to right, #4B3C8E, #7A5EC8);
+            color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -44,7 +45,7 @@
             box-sizing: border-box;
         }
         button {
-            background: green;
+            background: #181818;
             color: white;
             padding: 10px;
             border: none;
@@ -54,7 +55,7 @@
             margin-top: 10px;
         }
         button:hover {
-            background: darkgreen;
+            background: #242424;
         }
         p {
             margin-top: 10px;
@@ -72,10 +73,34 @@
             margin-bottom: 60px;
             font-size: 50px;
         }
+        .page-header {
+            display: flex;
+            align-items: baseline; 
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-size: 50px;
+            margin: 0;
+            line-height: 1;
+        }
+        .header-logo {
+            height: 48px; 
+            width: auto;
+            transform: translateY(4px); 
+        }
     </style>
 </head>
-<h1>Nordnet 2.0 🐓</h1>
+
+<div class="page-header">
+    <h1>Nordnet 2.0</h1>
+    <img src="/Pig-logo.png" alt="Pig Bank Logo" class="header-logo">
+</div>
+
 <body>
+
     <% if (error) { %>
         <p style="color: red;"><%= error %></p>
     <% } %>
