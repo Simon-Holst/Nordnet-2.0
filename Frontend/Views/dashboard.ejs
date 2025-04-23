@@ -18,26 +18,26 @@
         </div>
         <a href="/dashboard" class="sidebar-logo"> <img src="/Dashboard-logo.png" alt="Dashboard Logo">Dashboard</a>
         <a href="/accounts" class="sidebar-logo"> <img src="/Accounts-logo.png" alt="Accounts Logo">Accounts</a>
-        <a href="/portfolios" class="sidebar-logo"> <img src="/Portfolios-logo.png" alt="Portfolios Logo">Portfolios</a>
+        <a href="/portfolios/view" class="sidebar-logo"> <img src="/Portfolios-logo.png" alt="Portfolios Logo">Portfolios</a>
         <a href="/logout" class="logout-btn">Log out</a>
         <button id="closeSidebar"> Close</button>
     </div>
 
     <div class="main-content">
-        <h1>Velkommen, <%= username %> 👋</h1>
+        <h1>Wellcome, <%= username %> 👋</h1>
 
         <div class="top-cards">
             <div class="card">
                 <p class="card-title">Total value</p>
-                <p class="card-value" id="total-value">-</p>
+                <p class="card-value" id="totalValue">-</p>
             </div>
             <div class="card">
                 <p class="card-title">Realized profit</p>
-                <p class="card-value" id="realized-profit">-</p>
+                <p class="card-value" id="realizedProfit">-</p>
             </div>
             <div class="card">
                 <p class="card-title">Unrealized profit</p>
-                <p class="card-value" id="unrealized-profit">-</p>
+                <p class="card-value" id="unrealizedProfit">-</p>
             </div>
         </div>
 
@@ -79,5 +79,7 @@
         </div>
 
     </div>
+
+    <script src="/js/dashboard.js"></script>
 </body>
 </html>

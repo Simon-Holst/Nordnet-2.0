@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= portfolioName %> - Portfolio</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body data-portfolio-id="<%= portfolioId %>">
+
+  <div class="main-content">
+
+    <h1><%= portfolioName %> Portfolio</h1>
+
+    <!-- Værdi over tid (Line chart) -->
+    <div class="chart-box">
+      <h2>Samlet Værdi af portefølje</h2>
+      <canvas id="lineChart" width="600" height="200"></canvas>
+    </div>
+
+    <!-- Fordeling (Pie chart) -->
+    <div class="chart-box">
+      <h2>Fordeling af værdier</h2>
+      <canvas id="pieChart" width="300" height="300"></canvas>
+    </div>
+
+    <!-- Tabel -->
+    <div class="table-container">
+      <h2>Aktier i portefølje</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Volume</th>
+            <th>24h Change</th>
+            <th>Price</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody id="stocksTableBody">
+          <!-- Data fra JS -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="/js/portfolioDetails.js"></script>
+</body>
+</html>

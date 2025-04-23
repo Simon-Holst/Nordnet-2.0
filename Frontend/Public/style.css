@@ -214,5 +214,14 @@ h1 {
     background-color: #eee;
   }
   
+  .text-green {
+    color: #00c853; 
+  }
+  .text-red {
+    color: #d50000;
+  }
+  .text-neutral {
+    color: #ffffff;
+  }
   
   
