@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // === Helpers ===
+  // Load accounts
   async function loadAccounts() {
     const res = await fetch('/api/accounts');
     const accounts = await res.json();
