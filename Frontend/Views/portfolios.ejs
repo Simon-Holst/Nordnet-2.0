@@ -25,21 +25,22 @@
 
     <div class="main-content">
         <h1>Your Portfolios</h1>
-        <button id="openTradeModal">Register Trade</button>
-
-        <button class="newPortfolio-btn">+ Add Portfolio</button>
+        
+        <div class="button-container">
+            <button id="openTradeModal">Register Trade</button>
+            <button class="newPortfolio-btn">+ Add Portfolio</button>
+        </div>
+    
         <div id="portfolioForm" style="display: none;">
             <form id="newPortfolioForm">
                 <label for="portfolioName">Portfolio Name:</label>
                 <input type="text" id="portfolioName" name="name" required><br><br>
-        
                 <label for="portfolioAccount">Select Account:</label>
                 <select id="portfolioAccount" name="accountId" required></select><br><br>
-        
                 <button type="submit">Create Portfolio</button>
             </form>
         </div>
-
+    
         <div class="table-container">
             <h2>Portfolio Overview</h2>
             <table>
@@ -58,6 +59,7 @@
             </table>
         </div>
     </div>
+    
 
 <div id="tradeModal" class="modal" style="display: none;">
     <div class="modal-content">

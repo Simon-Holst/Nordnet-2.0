@@ -1,14 +1,48 @@
-
 // Visning af formular
-document.getElementById('toggleAccountForm').addEventListener('click', () => {
-    const form = document.getElementById('accountForm');
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-});
+document.addEventListener("DOMContentLoaded", () => {
+    const openBtn = document.getElementById("toggleAccountForm");
+    const modal = document.getElementById("accountFormModal");
+    const closeBtn = document.getElementById("closeAccountFormModalBtn");
+  
+    if (openBtn && modal && closeBtn) {
+      openBtn.addEventListener("click", () => {
+        modal.style.display = "block";
+      });
+  
+      closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+      });
+  
+      window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      });
+    }
+  });
+  
 // Visning af historik
-document.getElementById('toggleTransactionHistory').addEventListener('click', () => {
-    const section = document.getElementById('transaction-history');
-    section.style.display = section.style.display === 'none' ? 'block' : 'none';
-});
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("toggleTransactionHistory");
+    const closeBtn = document.getElementById("closeTransactionsModalBtn");
+    const transactionsModal = document.getElementById("transactionsModal");
+  
+    if (toggleBtn && closeBtn && transactionsModal) {
+      toggleBtn.addEventListener("click", () => {
+        transactionsModal.style.display = "block";
+      });
+  
+      closeBtn.addEventListener("click", () => {
+        transactionsModal.style.display = "none";
+      });
+  
+      window.addEventListener("click", (event) => {
+        if (event.target === transactionsModal) {
+          transactionsModal.style.display = "none";
+        }
+      });
+    }
+  });
 
 
 // Send formdata til serveren
@@ -53,7 +87,7 @@ async function loadAccounts() {
                 <td>${acc.Closed_at ? "Closed" : "Open"}</td>
                 <td>
                <button 
-            class="toggle-status-btn" 
+            class="toggle-status-btn ${acc.Closed_at ? 'reopen' : 'close'}" 
             data-id="${acc.account_id}" 
             data-status="${acc.Closed_at ? 'closed' : 'open'}"
             >
@@ -191,4 +225,3 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAccounts();
     populateAccountDropdown();
   });
-  

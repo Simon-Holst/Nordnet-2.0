@@ -185,13 +185,13 @@ h1 {
   }
   
   .modal-content {
-    background-color: #ffffff;
+    background:linear-gradient(to right, #4B3C8E, #7A5EC8);
     margin: 10% auto;
     padding: 20px;
     border-radius: 10px;
     width: 50%;
   }
-  
+
   .close {
     float: right;
     font-size: 28px;
@@ -200,7 +200,7 @@ h1 {
   }
 
   .suggestions-list {
-    background: white;
+    background: black;
     border: 1px solid #ccc;
     list-style: none;
     position: absolute;
@@ -211,8 +211,176 @@ h1 {
     cursor: pointer;
   }
   .suggestions-list li:hover {
-    background-color: #eee;
+    background-color: grey;
+  }
+
+  #openTradeModal,
+  .newPortfolio-btn {
+    background: rgb(66, 65, 65);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+  #openTradeModal:hover,
+  .newPortfolio-btn:hover {
+    transform: translateY(-2px);
+    background: #7A5EC8;
+}
+  
+#toggleAccountForm {
+    background: rgb(66, 65, 65);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#toggleAccountForm:hover {
+    transform: translateY(-2px);
+    background: #7A5EC8;
+}
+
+.transaction-form {
+    display: flex;
+    align-items: center;
+    gap: 20px;
   }
   
+  #toggleTransactionHistory {
+    background: rgb(66, 65, 65);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
   
+  #toggleTransactionHistory:hover {
+    transform: translateY(-2px);
+    background: #7A5EC8;
+  }
+
+.toggle-status-btn {
+    width: 60px; 
+    height: 36px; 
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: center;
+    display: inline-block;
+    line-height: 36px; 
+    padding: 0; 
+    font-size: 14px;
+}
   
+  .toggle-status-btn.close {
+    background-color: #f5b7b1; 
+  }
+
+  .toggle-status-btn.close:hover {
+    background-color: #e74c3c; 
+}
+  
+  .toggle-status-btn.reopen {
+    background-color: #a9dfbf; 
+}
+  
+ .toggle-status-btn.reopen:hover {
+    background-color: #2ecc71; 
+}
+  
+.form {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    max-width: 400px;
+    margin-top: 20px;
+    margin-left: 75px; 
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column; 
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #333; 
+}
+
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px; 
+}
+
+.submit-btn {
+    background:#4B3C8E;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background:#7A5EC8;
+}
+
+.horizontal-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.horizontal-form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-width: 180px;
+}
+
+.horizontal-form .submit-btn {
+    height: 42px;
+    align-self: center;
+}
+
+.transaction-form {
+    margin-left: 105px; 
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 10px 20px;
+  }
