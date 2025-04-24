@@ -208,3 +208,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  // PIE CHART VISNING 
+async function drawPortfolioDonutChart() {
+    try {
+      const res = await fetch('/api/portfolios/values');
+      const data = await res.json();
+  
+      if (!data || data.length === 0) return;
+  
+      const total = data.reduce((sum, p) => sum + p.value, 0);
+      const labels = data.map(p => p.portfolioName);
+      const values = data.map(p => p.value);
+      const percentages = data.map(p => ((p.value / total) * 100).toFixed(1) + '%');
+  
+      const ctx = document.getElementById('portfolioDonut')?.getContext('2d');
+      if (!ctx) return;
+  
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#9333ea'],
+          }]
+        },
+        options: {
+          responsive: true,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                generateLabels: function(chart) {
+                  return chart.data.labels.map((label, i) => ({
+                    text: `${label} (${percentages[i]})`,
+                    fillStyle: chart.data.datasets[0].backgroundColor[i],
+                    strokeStyle: '#000',
+                    lineWidth: 1
+                  }));
+                }
+              }
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Fejl ved hentning af porteføljeværdier:', err);
+    }
+  }
+  
+  // Kør funktionen når DOM er klar OBS på at flytte ind i anden DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    drawPortfolioDonutChart();
+  });
+  

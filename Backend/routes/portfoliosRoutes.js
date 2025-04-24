@@ -169,7 +169,7 @@ router.get('/:id/stocks', async (req, res) => {
   }
 });
 
-// === GET: EJS-detaljevisning ===
+// GET: EJS-detaljevisning
 router.get('/:id/details', async (req, res) => {
   const portfolioId = parseInt(req.params.id);
   const pool = await poolPromise;
@@ -193,4 +193,70 @@ router.get('/:id/details', async (req, res) => {
   }
 });
 
+// === GET: Porteføljeværdier til pie chart ===
+router.get('/values', requireLogin, async (req, res) => {
+    const userId = req.session.userId;
+  
+    try {
+      const pool = await poolPromise;
+  
+      // Hent brugerens porteføljer
+      const result = await pool.request()
+        .input('userId', sql.Int, userId)
+        .query(`
+          SELECT p.portfolio_id, p.name
+          FROM PortfolioTracker.Portfolios p
+          WHERE p.user_id = @userId
+        `);
+  
+      const portfolios = result.recordset;
+  
+      const enriched = await Promise.all(portfolios.map(async (p) => {
+        const trades = await pool.request()
+          .input('portfolioId', sql.Int, p.portfolio_id)
+          .query(`
+            SELECT trade_type, ticker_symbol, quantity, total_price
+            FROM PortfolioTracker.Trades
+            WHERE portfolio_id = @portfolioId
+          `);
+  
+        const holdings = {};
+        let totalValue = 0;
+  
+        for (const trade of trades.recordset) {
+          if (!holdings[trade.ticker_symbol]) {
+            holdings[trade.ticker_symbol] = { quantity: 0, totalCost: 0 };
+          }
+  
+          if (trade.trade_type === 'buy') {
+            holdings[trade.ticker_symbol].quantity += trade.quantity;
+          } else if (trade.trade_type === 'sell') {
+            holdings[trade.ticker_symbol].quantity -= trade.quantity;
+          }
+        }
+  
+        for (const [symbol, h] of Object.entries(holdings)) {
+          if (h.quantity > 0) {
+            try {
+              const current = await getCurrentStockPrice(symbol);
+              totalValue += h.quantity * current.price;
+            } catch (err) {
+              console.warn(`Fejl ved prisopslag for ${symbol}:`, err.message);
+            }
+          }
+        }
+  
+        return {
+          portfolioName: p.name,
+          value: parseFloat(totalValue.toFixed(2))
+        };
+      }));
+  
+      res.json(enriched);
+    } catch (err) {
+      console.error('Fejl ved beregning af porteføljeværdier til graf:', err);
+      res.status(500).json({ message: 'Serverfejl ved grafdata' });
+    }
+  });
+  
 module.exports = router;

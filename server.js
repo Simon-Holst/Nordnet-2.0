@@ -36,6 +36,9 @@ app.use("/api/stocks", stockRoutes);
 app.use("/portfolios", portfolioRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/stocks", stockRoutes);
+
+
 
   // Login-side
   app.get('/', (req, res) => {

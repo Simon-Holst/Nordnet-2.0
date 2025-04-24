@@ -3,7 +3,9 @@ const router = express.Router();
 const fetch = require('node-fetch');
 require('dotenv').config();
 
+
 const { getCurrentStockPrice } = require('../services/stockService');
+const { getHistoricalPrices } = require('../services/historicalPrices');
 
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY;
 
@@ -50,5 +52,20 @@ router.get('/:symbol', async (req, res) => {
     res.status(500).json({ error: 'Could not fetch stock data' });
   }
 });
+
+router.get('/:ticker/history', async (req, res) => {
+  try {
+    const data = await getHistoricalPrices(req.params.ticker);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch historical prices' });
+  }
+});
+
+router.get('/:ticker/details', (req, res) => {
+  const ticker = req.params.ticker;
+  res.render('stockDetails', { tickerSymbol: ticker });
+});
+
 
 module.exports = router;

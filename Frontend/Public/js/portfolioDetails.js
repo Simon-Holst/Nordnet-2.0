@@ -10,7 +10,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     stocks.forEach(stock => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${stock.ticker}</td>
+        <td>
+            <a href="/stocks/${stock.ticker}/details?portfolioId=${portfolioId}">
+             ${stock.ticker}
+            </a>
+        </td>
         <td>${stock.quantity} stk.</td>
         <td style="color: ${parseFloat(stock.unrealizedGain) >= 0 ? 'lightgreen' : 'red'};">
           ${((parseFloat(stock.unrealizedGain) / (stock.GAK * stock.quantity)) * 100).toFixed(2)}%
