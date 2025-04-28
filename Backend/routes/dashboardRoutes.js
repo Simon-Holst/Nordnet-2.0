@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { sql, poolPromise } = require('../SQL/database');
 const { getCurrentStockPrice } = require('../services/stockService');
+const { getHistoricalPrices } = require('../services/historicalPrices');
 
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
@@ -93,5 +94,8 @@ router.get('/stats', requireLogin, async (req, res) => {
     res.status(500).json({ message: 'Fejl ved hentning af dashboard data' });
   }
 });
+
+
+  
 
 module.exports = router;
