@@ -1,10 +1,10 @@
-
 document.addEventListener('DOMContentLoaded', () => {
 
     loadAccounts();
     loadPortfolios();
     loadAccountsToModal();
     loadPortfoliosToModal();
+    drawPortfolioDonutChart(); // ← Tilføjet korrekt her
   
     // Ny portfolio visning toggle
     document.querySelector('.newPortfolio-btn')?.addEventListener('click', () => {
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
       formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
     });
   
-    //Portfolio oprettelse
+    // Portfolio oprettelse
     const newPortfolioForm = document.getElementById('newPortfolioForm');
     if (newPortfolioForm) {
       newPortfolioForm.addEventListener('submit', async (e) => {
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   
-    //Modal handling
+    // Modal handling
     document.getElementById('openTradeModal')?.addEventListener('click', () => {
       document.getElementById('tradeModal').style.display = 'block';
     });
@@ -141,9 +141,11 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Noget gik galt under handlen. Prøv igen.');
       }
     });
+  
   });
   
-  // Load accounts to select dropdown
+  // === Udenfor DOMContentLoaded ===
+  
   async function loadAccounts() {
     const res = await fetch('/api/accounts');
     const accounts = await res.json();
@@ -156,10 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Load all portfolios to table
   async function loadPortfolios() {
     const res = await fetch('/api/portfolios');
-    const portfolios = await res.json();
+    const data = await res.json(); // { portfolios, totalValueUSD, totalValueDKK }
+  
+    const portfolios = data.portfolios;
+    const totalValueDKK = data.totalValueDKK;
+  
     const tableBody = document.getElementById('portfolios-table');
     tableBody.innerHTML = '';
   
@@ -174,13 +179,28 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${p.account_name}</td>
         <td class="${changeClass}">${changeFormatted}</td>
         <td>${p.last_trade ? new Date(p.last_trade).toLocaleString() : '-'}</td>
-        <td>${p.total_value ? parseFloat(p.total_value).toLocaleString() + ' DKK' : '-'}</td>
+        <td>${p.total_value ? parseFloat(p.total_value).toLocaleString() + ' USD' : '-'}</td>
       `;
       tableBody.appendChild(row);
     });
+  
+    renderTotalValueDKK(totalValueDKK);
   }
   
+  function renderTotalValueDKK(totalValueDKK) {
+    const container = document.getElementById('dkkCardContainer');
   
+    container.innerHTML = '';
+  
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <h2>Total value (DKK)</h2>
+      <p>DKK ${parseFloat(totalValueDKK).toLocaleString('da-DK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+    `;
+  
+    container.appendChild(card);
+  }
   
   async function loadAccountsToModal() {
     const res = await fetch('/api/accounts');
@@ -197,7 +217,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   async function loadPortfoliosToModal() {
     const res = await fetch('/api/portfolios');
-    const portfolios = await res.json();
+    const data = await res.json();
+    const portfolios = data.portfolios;
     const select = document.getElementById('portfolio');
     select.innerHTML = '';
     portfolios.forEach(p => {
@@ -208,10 +229,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // PIE CHART VISNING 
-async function drawPortfolioDonutChart() {
+  // PIE CHART
+  async function drawPortfolioDonutChart() {
     try {
-      const res = await fetch('/api/portfolios/values');
+      const res = await fetch('/portfolios/values');
+      if (!res.ok) throw new Error('Failed fetching pie chart data');
       const data = await res.json();
   
       if (!data || data.length === 0) return;
@@ -257,9 +279,4 @@ async function drawPortfolioDonutChart() {
       console.error('Fejl ved hentning af porteføljeværdier:', err);
     }
   }
-  
-  // Kør funktionen når DOM er klar OBS på at flytte ind i anden DOM
-  document.addEventListener('DOMContentLoaded', () => {
-    drawPortfolioDonutChart();
-  });
   

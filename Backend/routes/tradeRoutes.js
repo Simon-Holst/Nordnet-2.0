@@ -3,8 +3,8 @@ const router = express.Router();
 const { sql, poolPromise } = require('../SQL/database.js');
 const fetch = require('node-fetch');
 require('dotenv').config();
+const { getExchangeRate } = require('../services/currencyService')
 
-console.log("tradeRoutes.js loaded");
 
 router.post('/', async (req, res) => {
   const {
@@ -39,20 +39,25 @@ router.post('/', async (req, res) => {
     const finnApiUrl = `https://finnhub.io/api/v1/quote?symbol=${ticker_symbol}&token=${process.env.FINNHUB_API_KEY}`;
     const response = await fetch(finnApiUrl);
     const data = await response.json();
-    const latestPrice = parseFloat(data.c);
+    let latestPrice = parseFloat(data.c);
 
     if (!latestPrice || isNaN(latestPrice)) {
       return res.status(400).json({ message: "Could not fetch valid stock price" });
     }
+    // Hvis konto ikke er i USD, konverter prisen til kontovaluta
+    if (account.currency !== 'USD') {
+        const exchangeRate = await getExchangeRate('USD', account.currency); // Brug din currencyService
+        latestPrice = latestPrice * exchangeRate;
+      }
 
-    // === 3. Beregn total pris og fee ===
+    // 3. Beregn total pris og fee
     const parsedQuantity = parseFloat(quantity);
     const total_price = parseFloat((latestPrice * parsedQuantity).toFixed(2));
     const fee = parseFloat((total_price * 0.005).toFixed(2));
     const totalWithFee = isBuy ? total_price + fee : total_price - fee;
     const finalTransactionAmount = isBuy ? -totalWithFee : totalWithFee;
 
-    // === 4. Tjek om der er dækning ===
+    // 4. Tjek om der er dækning 
     if (isBuy && account.balance < totalWithFee) {
       return res.status(400).json({ message: "Insufficient funds for this trade" });
     }
@@ -61,7 +66,7 @@ router.post('/', async (req, res) => {
       ? account.balance - totalWithFee
       : account.balance + totalWithFee;
 
-    // === 5. Opret trade i DB ===
+    // 5. Opret trade i DB
     await pool.request()
       .input('accountId', sql.Int, accountId)
       .input('portfolioId', sql.Int, portfolioId)
@@ -78,7 +83,7 @@ router.post('/', async (req, res) => {
         VALUES (@accountId, @portfolioId, @trade_type, @ticker_symbol, @security_type, @quantity, @total_price, @fee, @trade_date)
       `);
 
-    // === 6. Opdater konto saldo ===
+    // 6. Opdater konto saldo
     await pool.request()
       .input('accountId', sql.Int, accountId)
       .input('newBalance', sql.Decimal(18, 2), newBalance)
@@ -88,7 +93,7 @@ router.post('/', async (req, res) => {
         WHERE account_id = @accountId
       `);
 
-    // === 7. Opret transaktion i historik ===
+    // 7. Opret transaktion i historik
     await pool.request()
       .input('accountId', sql.Int, accountId)
       .input('type', sql.VarChar, trade_type)

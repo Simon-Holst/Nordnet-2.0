@@ -3,6 +3,7 @@ const router = express.Router();
 const { sql, poolPromise } = require('../SQL/database');
 const { getCurrentStockPrice } = require('../services/stockService');
 const { getHistoricalPrices } = require('../services/historicalPrices');
+const { getExchangeRate } = require('../services/currencyService'); // Tilføjet!
 
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
@@ -18,7 +19,12 @@ router.get('/stats', requireLogin, async (req, res) => {
   try {
     const portfoliosRes = await pool.request()
       .input('userId', sql.Int, userId)
-      .query(`SELECT portfolio_id, name FROM PortfolioTracker.Portfolios WHERE user_id = @userId`);
+      .query(`
+        SELECT p.portfolio_id, p.name, a.currency
+        FROM PortfolioTracker.Portfolios p
+        INNER JOIN PortfolioTracker.Accounts a ON p.account_id = a.account_id
+        WHERE p.user_id = @userId
+      `);
 
     const portfolios = portfoliosRes.recordset;
 
@@ -30,7 +36,12 @@ router.get('/stats', requireLogin, async (req, res) => {
     for (const p of portfolios) {
       const tradesRes = await pool.request()
         .input('portfolioId', sql.Int, p.portfolio_id)
-        .query(`SELECT * FROM PortfolioTracker.Trades WHERE portfolio_id = @portfolioId ORDER BY trade_date`);
+        .query(`
+          SELECT *
+          FROM PortfolioTracker.Trades
+          WHERE portfolio_id = @portfolioId
+          ORDER BY trade_date
+        `);
 
       const trades = tradesRes.recordset;
       const holdings = {};
@@ -59,7 +70,16 @@ router.get('/stats', requireLogin, async (req, res) => {
         if (data.quantity > 0) {
           try {
             const { price } = await getCurrentStockPrice(symbol);
-            const value = price * data.quantity;
+
+            let finalPrice = price; // Pris fra Finnhub i USD
+
+            // === Valutakonvertering hvis nødvendigt ===
+            if (p.currency !== 'USD') {
+              const exchangeRate = await getExchangeRate('USD', p.currency);
+              finalPrice *= exchangeRate;
+            }
+
+            const value = finalPrice * data.quantity;
             const unrealized = value - data.cost;
 
             totalValue += value;
@@ -71,6 +91,7 @@ router.get('/stats', requireLogin, async (req, res) => {
               value,
               unrealizedProfit: unrealized
             });
+
           } catch (err) {
             console.warn(`Fejl ved pris for ${symbol}:`, err.message);
           }
@@ -94,8 +115,5 @@ router.get('/stats', requireLogin, async (req, res) => {
     res.status(500).json({ message: 'Fejl ved hentning af dashboard data' });
   }
 });
-
-
-  
 
 module.exports = router;
