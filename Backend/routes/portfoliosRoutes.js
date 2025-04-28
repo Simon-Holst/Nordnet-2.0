@@ -10,6 +10,47 @@ function requireLogin(req, res, next) {
   }
   next();
 }
+// Til at gemme value fra portfolio
+async function snapshotPortfolioValue(portfolioId) {
+    const pool = await poolPromise;
+  
+    const trades = await pool.request()
+      .input('portfolioId', sql.Int, portfolioId)
+      .query(`
+        SELECT trade_type, ticker_symbol, quantity
+        FROM PortfolioTracker.Trades
+        WHERE portfolio_id = @portfolioId
+      `);
+  
+    const holdings = {};
+    trades.recordset.forEach(t => {
+      if (!holdings[t.ticker_symbol]) holdings[t.ticker_symbol] = 0;
+      holdings[t.ticker_symbol] += t.trade_type === 'buy' ? t.quantity : -t.quantity;
+    });
+  
+    let totalValue = 0;
+    for (const [ticker, qty] of Object.entries(holdings)) {
+      if (qty <= 0) continue;
+      const { price } = await getCurrentStockPrice(ticker);
+      totalValue += qty * price;
+    }
+  
+    const today = new Date().toISOString().split('T')[0];
+  
+    await pool.request()
+      .input('portfolioId', sql.Int, portfolioId)
+      .input('date', sql.Date, today)
+      .input('value', sql.Decimal(18, 2), totalValue)
+      .query(`
+        IF NOT EXISTS (
+          SELECT 1 FROM PortfolioTracker.PortfolioSnapshots
+          WHERE portfolio_id = @portfolioId AND date = @date
+        )
+        INSERT INTO PortfolioTracker.PortfolioSnapshots (portfolio_id, date, value)
+        VALUES (@portfolioId, @date, @value)
+      `);
+  }
+  
 
 // === POST: Opret ny portefølje ===
 router.post('/', requireLogin, async (req, res) => {
@@ -171,27 +212,30 @@ router.get('/:id/stocks', async (req, res) => {
 
 // GET: EJS-detaljevisning
 router.get('/:id/details', async (req, res) => {
-  const portfolioId = parseInt(req.params.id);
-  const pool = await poolPromise;
-
-  try {
-    const result = await pool.request()
-      .input('id', sql.Int, portfolioId)
-      .query('SELECT name FROM PortfolioTracker.Portfolios WHERE portfolio_id = @id');
-
-    if (result.recordset.length === 0) {
-      return res.status(404).send('Portfolio not found');
+    const portfolioId = parseInt(req.params.id);
+    const pool = await poolPromise;
+  
+    try {
+      await snapshotPortfolioValue(portfolioId); 
+  
+      const result = await pool.request()
+        .input('id', sql.Int, portfolioId)
+        .query('SELECT name FROM PortfolioTracker.Portfolios WHERE portfolio_id = @id');
+  
+      if (result.recordset.length === 0) {
+        return res.status(404).send('Portfolio not found');
+      }
+  
+      res.render('portfolioDetails', {
+        portfolioId,
+        portfolioName: result.recordset[0].name
+      });
+    } catch (err) {
+      console.error('Error loading portfolio details page:', err);
+      res.status(500).send('Internal server error');
     }
-
-    res.render('portfolioDetails', {
-      portfolioId,
-      portfolioName: result.recordset[0].name
-    });
-  } catch (err) {
-    console.error('Error loading portfolio details page:', err);
-    res.status(500).send('Internal server error');
-  }
-});
+  });
+  
 
 // === GET: Porteføljeværdier til pie chart ===
 router.get('/values', requireLogin, async (req, res) => {
@@ -259,4 +303,27 @@ router.get('/values', requireLogin, async (req, res) => {
     }
   });
   
+  // GET: Returnér historisk snapshot-data for en portefølje
+router.get('/:id/history', async (req, res) => {
+    const portfolioId = parseInt(req.params.id);
+    const pool = await poolPromise;
+  
+    try {
+      const result = await pool.request()
+        .input('portfolioId', sql.Int, portfolioId)
+        .query(`
+          SELECT date, value
+          FROM PortfolioTracker.PortfolioSnapshots
+          WHERE portfolio_id = @portfolioId
+          ORDER BY date ASC
+        `);
+  
+      res.json(result.recordset);
+    } catch (err) {
+      console.error('Fejl ved hentning af snapshot-historik:', err);
+      res.status(500).json({ message: 'Fejl ved hentning af historik' });
+    }
+  });
+  
+
 module.exports = router;
