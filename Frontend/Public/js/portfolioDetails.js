@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const portfolioId = document.body.dataset.portfolioId;
+  
+    // Hent aktier i porteføljen
     const res = await fetch(`/api/portfolios/${portfolioId}/stocks`);
     const stocks = await res.json();
   
@@ -11,9 +13,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>
-            <a href="/stocks/${stock.ticker}/details?portfolioId=${portfolioId}">
-             ${stock.ticker}
-            </a>
+          <a href="/stocks/${stock.ticker}/details?portfolioId=${portfolioId}">
+            ${stock.ticker}
+          </a>
         </td>
         <td>${stock.quantity} stk.</td>
         <td style="color: ${parseFloat(stock.unrealizedGain) >= 0 ? 'lightgreen' : 'red'};">
@@ -28,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       chartData.push(parseFloat(stock.expectedValue));
     });
   
-    // PIE CHART
+    // PIE CHART – aktiefordeling
     const pieCtx = document.getElementById('pieChart').getContext('2d');
     new Chart(pieCtx, {
       type: 'doughnut',
@@ -49,21 +51,42 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   
-    // MOCK LINE CHART (kan senere baseres på historik)
+    // LINE CHART – historisk udvikling
+    await drawPortfolioHistoryChart(portfolioId);
+  });
+  
+  async function drawPortfolioHistoryChart(portfolioId) {
+    const res = await fetch(`/api/portfolios/${portfolioId}/history`);
+    const data = await res.json();
+  
+    if (!data.length) {
+      const chartBox = document.querySelector('.chart-box');
+      const message = document.createElement('p');
+      message.textContent = 'Ingen historiske data endnu.';
+      message.style.color = 'white';
+      chartBox.appendChild(message);
+      return;
+    }
+  
+    const labels = data.map(d => d.date);
+    const values = data.map(d => d.value);
+  
     const lineCtx = document.getElementById('lineChart').getContext('2d');
     new Chart(lineCtx, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        labels,
         datasets: [{
-          label: 'Portefølje værdi',
-          data: [100000, 150000, 180000, 250000, 210000, 190000, 230000],
-          fill: false,
+          label: 'Porteføljens værdi (urealiseret)',
+          data: values,
           borderColor: '#2ecc71',
-          tension: 0.1
+          borderWidth: 2,
+          tension: 0.2,
+          fill: false
         }]
       },
       options: {
+        responsive: true,
         plugins: {
           legend: {
             labels: { color: 'white' }
@@ -71,9 +94,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
         scales: {
           x: { ticks: { color: 'white' } },
-          y: { ticks: { color: 'white' } }
+          y: {
+            ticks: { color: 'white' },
+            beginAtZero: false
+          }
         }
       }
     });
-  });
+  }
   
