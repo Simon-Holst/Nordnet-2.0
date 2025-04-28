@@ -1,68 +1,56 @@
 const express = require('express');
 const router = express.Router();
-const { sql, poolPromise } = require('../SQL/database');
+const { sql, poolPromise } = require('../SQL/database.js');
 const { getCurrentStockPrice } = require('../services/stockService');
-const { getHistoricalPrices } = require('../services/historicalPrices');
-const { getExchangeRate } = require('../services/currencyService'); // Tilføjet!
+const { getExchangeRate } = require('../services/currencyService');
 
-function requireLogin(req, res, next) {
-  if (!req.session || !req.session.userId) {
-    return res.status(401).json({ message: 'Unauthorized' });
+// Dashboard hovedrute
+router.get('/', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
   }
-  next();
-}
 
-router.get('/stats', requireLogin, async (req, res) => {
   const userId = req.session.userId;
-  const pool = await poolPromise;
 
   try {
-    const portfoliosRes = await pool.request()
+    const pool = await poolPromise;
+
+    const portfoliosResult = await pool.request()
       .input('userId', sql.Int, userId)
       .query(`
-        SELECT p.portfolio_id, p.name, a.currency
+        SELECT p.portfolio_id, p.name
         FROM PortfolioTracker.Portfolios p
-        INNER JOIN PortfolioTracker.Accounts a ON p.account_id = a.account_id
         WHERE p.user_id = @userId
       `);
 
-    const portfolios = portfoliosRes.recordset;
-
-    let totalValue = 0;
-    let realizedProfit = 0;
-    let unrealizedProfit = 0;
+    const portfolios = portfoliosResult.recordset;
+    let totalValueUSD = 0;
+    let unrealizedProfitUSD = 0;
     const allSecurities = [];
 
     for (const p of portfolios) {
-      const tradesRes = await pool.request()
+      const tradesResult = await pool.request()
         .input('portfolioId', sql.Int, p.portfolio_id)
         .query(`
-          SELECT *
+          SELECT trade_type, ticker_symbol, quantity, total_price
           FROM PortfolioTracker.Trades
           WHERE portfolio_id = @portfolioId
-          ORDER BY trade_date
         `);
 
-      const trades = tradesRes.recordset;
+      const trades = tradesResult.recordset;
       const holdings = {};
 
-      for (const trade of trades) {
-        const symbol = trade.ticker_symbol;
-        if (!holdings[symbol]) {
-          holdings[symbol] = { quantity: 0, cost: 0 };
+      for (const t of trades) {
+        if (!holdings[t.ticker_symbol]) {
+          holdings[t.ticker_symbol] = { quantity: 0, cost: 0 };
         }
 
-        if (trade.trade_type === 'buy') {
-          holdings[symbol].quantity += trade.quantity;
-          holdings[symbol].cost += trade.total_price;
-        } else if (trade.trade_type === 'sell') {
-          const avg = holdings[symbol].cost / (holdings[symbol].quantity || 1);
-          const soldCost = avg * trade.quantity;
-          const gain = trade.total_price - soldCost;
-
-          realizedProfit += gain;
-          holdings[symbol].quantity -= trade.quantity;
-          holdings[symbol].cost -= soldCost;
+        if (t.trade_type === 'buy') {
+          holdings[t.ticker_symbol].quantity += t.quantity;
+          holdings[t.ticker_symbol].cost += t.total_price;
+        } else if (t.trade_type === 'sell') {
+          holdings[t.ticker_symbol].quantity -= t.quantity;
+          // cost ændres IKKE ved salg
         }
       }
 
@@ -70,49 +58,63 @@ router.get('/stats', requireLogin, async (req, res) => {
         if (data.quantity > 0) {
           try {
             const { price } = await getCurrentStockPrice(symbol);
+            const expectedValueUSD = price * data.quantity;
+            //console.log(`DEBUG - ${symbol}: GAK cost=${data.cost}, expected=${expectedValueUSD}`);
 
-            let finalPrice = price; // Pris fra Finnhub i USD
+            const unrealizedUSD = expectedValueUSD - data.cost;
 
-            // === Valutakonvertering hvis nødvendigt ===
-            if (p.currency !== 'USD') {
-              const exchangeRate = await getExchangeRate('USD', p.currency);
-              finalPrice *= exchangeRate;
-            }
-
-            const value = finalPrice * data.quantity;
-            const unrealized = value - data.cost;
-
-            totalValue += value;
-            unrealizedProfit += unrealized;
+            totalValueUSD += expectedValueUSD;
+            unrealizedProfitUSD += unrealizedUSD;
 
             allSecurities.push({
-              symbol,
+              name: symbol,
               portfolio: p.name,
-              value,
-              unrealizedProfit: unrealized
+              valueUSD: expectedValueUSD,
+              unrealizedProfitUSD: unrealizedUSD
             });
 
           } catch (err) {
-            console.warn(`Fejl ved pris for ${symbol}:`, err.message);
+            console.warn(`Fejl ved prisopslag for ${symbol}:`, err.message);
           }
         }
       }
     }
 
-    const topByValue = [...allSecurities].sort((a, b) => b.value - a.value).slice(0, 5);
-    const topByProfit = [...allSecurities].sort((a, b) => b.unrealizedProfit - a.unrealizedProfit).slice(0, 5);
+    const exchangeRate = await getExchangeRate('USD', 'DKK');
+    const totalValueDKK = totalValueUSD * exchangeRate;
+    const unrealizedProfitDKK = unrealizedProfitUSD * exchangeRate;
 
-    res.json({
-      totalValue: totalValue.toFixed(2),
-      realizedProfit: realizedProfit.toFixed(2),
-      unrealizedProfit: unrealizedProfit.toFixed(2),
+    // Top 5 sorteringer
+    const topByValue = [...allSecurities]
+      .sort((a, b) => b.valueUSD - a.valueUSD)
+      .slice(0, 5)
+      .map(s => ({
+        name: s.name,
+        portfolio: s.portfolio,
+        valueDKK: (s.valueUSD * exchangeRate).toFixed(2)
+      }));
+
+    const topByProfit = [...allSecurities]
+      .sort((a, b) => b.unrealizedProfitUSD - a.unrealizedProfitUSD)
+      .slice(0, 5)
+      .map(s => ({
+        name: s.name,
+        portfolio: s.portfolio,
+        profitDKK: (s.unrealizedProfitUSD * exchangeRate).toFixed(2)
+      }));
+
+    res.render('dashboard', {
+      username: req.session.username,
+      totalValueDKK: totalValueDKK.toFixed(2),
+      realizedProfitDKK: (0).toFixed(2), // Realized endnu ikke implementeret
+      unrealizedProfitDKK: unrealizedProfitDKK.toFixed(2),
       topByValue,
       topByProfit
     });
 
   } catch (err) {
-    console.error('Dashboard stats fejl:', err);
-    res.status(500).json({ message: 'Fejl ved hentning af dashboard data' });
+    console.error('Fejl i dashboard route:', err);
+    res.status(500).send('Serverfejl ved indlæsning af dashboard.');
   }
 });
 

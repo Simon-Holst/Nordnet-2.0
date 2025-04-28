@@ -35,7 +35,7 @@ app.use("/api/trade", tradeRoutes);
 app.use("/api/stocks", stockRoutes);
 app.use("/portfolios", portfolioRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/dashboard", dashboardRoutes);
 app.use("/stocks", stockRoutes);
 
 
@@ -55,12 +55,12 @@ app.use("/stocks", stockRoutes);
 
   
   // Dashboard-side
-  app.get('/dashboard', (req, res) => {
-    if (!req.session.loggedIn) {
-      return res.redirect('/'); // Send brugeren tilbage til login, hvis ikke logget ind
-    }
-    res.render('dashboard', { username: req.session.username });
-  });
+  // app.get('/dashboard', (req, res) => {
+  //   if (!req.session.loggedIn) {
+  //     return res.redirect('/'); // Send brugeren tilbage til login, hvis ikke logget ind
+  //   }
+  //   res.render('dashboard', { username: req.session.username });
+  // });
   
   app.get("/portfolios/view", (req, res) => {
     res.render("portfolios", { error: null });

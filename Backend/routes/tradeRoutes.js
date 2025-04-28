@@ -3,9 +3,10 @@ const router = express.Router();
 const { sql, poolPromise } = require('../SQL/database.js');
 const fetch = require('node-fetch');
 require('dotenv').config();
-const { getExchangeRate } = require('../services/currencyService')
+const { getExchangeRate } = require('../services/currencyService');
 
 
+// === POST: Opret en trade ===
 router.post('/', async (req, res) => {
   const {
     accountId,
@@ -22,7 +23,7 @@ router.post('/', async (req, res) => {
   try {
     const pool = await poolPromise;
 
-    // === 1. Tjek konto ===
+    // 1. Hent kontoen
     const result = await pool.request()
       .input('accountId', sql.Int, accountId)
       .query(`
@@ -35,38 +36,39 @@ router.post('/', async (req, res) => {
     if (!account) return res.status(404).json({ message: "Account not found" });
     if (account.Closed_at) return res.status(400).json({ message: "Account is closed" });
 
-    // === 2. Hent aktuel pris fra Finnhub ===
+    // 2. Hent aktuel aktiepris (ALTID i USD fra Finnhub)
     const finnApiUrl = `https://finnhub.io/api/v1/quote?symbol=${ticker_symbol}&token=${process.env.FINNHUB_API_KEY}`;
     const response = await fetch(finnApiUrl);
     const data = await response.json();
-    let latestPrice = parseFloat(data.c);
+    const latestPrice = parseFloat(data.c);
 
     if (!latestPrice || isNaN(latestPrice)) {
       return res.status(400).json({ message: "Could not fetch valid stock price" });
     }
-    // Hvis konto ikke er i USD, konverter prisen til kontovaluta
-    if (account.currency !== 'USD') {
-        const exchangeRate = await getExchangeRate('USD', account.currency); // Brug din currencyService
-        latestPrice = latestPrice * exchangeRate;
-      }
 
-    // 3. Beregn total pris og fee
+    // 3. Beregn total pris og fee (ALTID i USD)
     const parsedQuantity = parseFloat(quantity);
     const total_price = parseFloat((latestPrice * parsedQuantity).toFixed(2));
     const fee = parseFloat((total_price * 0.005).toFixed(2));
     const totalWithFee = isBuy ? total_price + fee : total_price - fee;
-    const finalTransactionAmount = isBuy ? -totalWithFee : totalWithFee;
 
-    // 4. Tjek om der er dækning 
-    if (isBuy && account.balance < totalWithFee) {
+    // 4. Konverter totalWithFee til kontovaluta (hvis nødvendigt)
+    let finalTransactionAmount = totalWithFee;
+    if (account.currency !== 'USD') {
+      const exchangeRate = await getExchangeRate('USD', account.currency);
+      finalTransactionAmount = parseFloat((totalWithFee * exchangeRate).toFixed(2));
+    }
+
+    const adjustedAmount = isBuy ? -finalTransactionAmount : finalTransactionAmount;
+
+    // 5. Tjek om der er dækning
+    if (isBuy && account.balance < Math.abs(adjustedAmount)) {
       return res.status(400).json({ message: "Insufficient funds for this trade" });
     }
 
-    const newBalance = isBuy
-      ? account.balance - totalWithFee
-      : account.balance + totalWithFee;
+    const newBalance = account.balance + adjustedAmount;
 
-    // 5. Opret trade i DB
+    // 6. Gem trade (ALTID i USD)
     await pool.request()
       .input('accountId', sql.Int, accountId)
       .input('portfolioId', sql.Int, portfolioId)
@@ -83,7 +85,7 @@ router.post('/', async (req, res) => {
         VALUES (@accountId, @portfolioId, @trade_type, @ticker_symbol, @security_type, @quantity, @total_price, @fee, @trade_date)
       `);
 
-    // 6. Opdater konto saldo
+    // 7. Opdater kontoens saldo (i kontovaluta)
     await pool.request()
       .input('accountId', sql.Int, accountId)
       .input('newBalance', sql.Decimal(18, 2), newBalance)
@@ -93,11 +95,11 @@ router.post('/', async (req, res) => {
         WHERE account_id = @accountId
       `);
 
-    // 7. Opret transaktion i historik
+    // 8. Gem transaktionen i historik
     await pool.request()
       .input('accountId', sql.Int, accountId)
       .input('type', sql.VarChar, trade_type)
-      .input('amount', sql.Decimal(18, 2), Math.abs(finalTransactionAmount))
+      .input('amount', sql.Decimal(18, 2), Math.abs(adjustedAmount))
       .input('currency', sql.VarChar, account.currency || 'DKK')
       .input('created_at', sql.DateTime, tradeDate)
       .input('balance_after', sql.Decimal(18, 2), newBalance)
