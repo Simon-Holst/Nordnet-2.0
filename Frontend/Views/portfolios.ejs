@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolios</title>
     <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <script src="/js/sidebar.js"></script>
@@ -17,20 +18,35 @@
         </div>
         <a href="/dashboard" class="sidebar-logo"> <img src="/Dashboard-logo.png" alt="Dashboard Logo">Dashboard</a>
         <a href="/accounts" class="sidebar-logo"> <img src="/Accounts-logo.png" alt="Accounts Logo">Accounts</a>
-        <a href="/portfolios" class="sidebar-logo"> <img src="/Portfolios-logo.png" alt="Portfolios Logo">Portfolios</a>
+        <a href="/portfolios/view" class="sidebar-logo"> <img src="/Portfolios-logo.png" alt="Portfolios Logo">Portfolios</a>
         <a href="/logout" class="logout-btn">Log out</a>
         <button id="closeSidebar"> Close</button>
     </div>
 
 
+    
+      
+
     <div class="main-content">
         <h1>Your Portfolios</h1>
+
         
         <div class="button-container">
             <button id="openTradeModal">Register Trade</button>
             <button class="newPortfolio-btn">+ Add Portfolio</button>
         </div>
     
+
+        <button id="openTradeModal">Register Trade</button>
+
+        <button class="newPortfolio-btn">+ Add Portfolio</button> <br><br>
+
+        <div class="card">
+            <h3>Fordeling af værdi i porteføljer</h3>
+            <canvas id="portfolioDonut" width="400" height="200"></canvas>
+        </div>
+
+
         <div id="portfolioForm" style="display: none;">
             <form id="newPortfolioForm">
                 <label for="portfolioName">Portfolio Name:</label>
@@ -47,7 +63,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Bank Account</th>
+                        <th>Account</th>
                         <th>24 hour Change</th>
                         <th>Last trade</th>
                         <th>Total value</th>

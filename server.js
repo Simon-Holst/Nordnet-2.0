@@ -11,6 +11,8 @@ const transactionRoutes = require('./Backend/routes/transactionRoutes.js');
 const portfoliosRoutes = require('./Backend/routes/portfoliosRoutes.js');
 const tradeRoutes = require('./Backend/routes/tradeRoutes.js');
 const stockRoutes = require('./Backend/routes/stockRoutes.js');
+const portfolioRoutes = require('./Backend/routes/portfoliosRoutes.js');
+const dashboardRoutes = require('./Backend/routes/dashboardRoutes.js');
 
 app.set("view engine", "ejs"); // Bruger EJS til at gengive HTML
 app.set("views", __dirname + "/Frontend/Views");
@@ -31,6 +33,12 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/api/trade", tradeRoutes);
 app.use("/api/stocks", stockRoutes);
+app.use("/portfolios", portfolioRoutes);
+app.use("/api/portfolios", portfoliosRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/stocks", stockRoutes);
+
+
 
   // Login-side
   app.get('/', (req, res) => {
@@ -54,7 +62,7 @@ app.use("/api/stocks", stockRoutes);
     res.render('dashboard', { username: req.session.username });
   });
   
-  app.get("/portfolios", (req, res) => {
+  app.get("/portfolios/view", (req, res) => {
     res.render("portfolios", { error: null });
 });
 

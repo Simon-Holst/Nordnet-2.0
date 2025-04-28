@@ -25,6 +25,17 @@ async function getCurrentStockPrice(ticker) {
   }
 }
 
+async function getPreviousClosePrice(ticker) {
+  const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${FINNHUB_API_KEY}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Finnhub error: ${response.status}`);
+  const data = await response.json();
+  return data.pc; // 'pc' = previous close
+}
+
+
+
 module.exports = {
-  getCurrentStockPrice
+  getCurrentStockPrice,
+  getPreviousClosePrice
 };

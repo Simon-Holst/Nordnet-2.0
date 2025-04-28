@@ -260,6 +260,7 @@ h1 {
     gap: 20px;
   }
   
+
   #toggleTransactionHistory {
     background: rgb(66, 65, 65);
     color: white;
@@ -271,6 +272,15 @@ h1 {
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .text-green {
+    color: #00c853; 
+  }
+  .text-red {
+    color: #d50000;
+  }
+  .text-neutral {
+    color: #ffffff;
   }
   
   #toggleTransactionHistory:hover {

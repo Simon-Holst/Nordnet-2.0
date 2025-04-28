@@ -6,8 +6,8 @@ const config = {
     server: 'mathias-bech.database.windows.net',
     database: 'Prog - Database',
     options : {
-        encrypt: true, // For Azure
-        trustServerCertificate: false // For Azure
+        encrypt: true, 
+        trustServerCertificate: false 
     }
 };
 

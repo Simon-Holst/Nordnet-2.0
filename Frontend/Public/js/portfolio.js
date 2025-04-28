@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
 
     loadAccounts();
@@ -5,16 +6,54 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAccountsToModal();
     loadPortfoliosToModal();
   
-    // === Modal handling ===
-    document.getElementById('openTradeModal').addEventListener('click', () => {
+    // Ny portfolio visning toggle
+    document.querySelector('.newPortfolio-btn')?.addEventListener('click', () => {
+      const formContainer = document.getElementById('portfolioForm');
+      formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
+    });
+  
+    //Portfolio oprettelse
+    const newPortfolioForm = document.getElementById('newPortfolioForm');
+    if (newPortfolioForm) {
+      newPortfolioForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('portfolioName').value;
+        const accountId = document.getElementById('portfolioAccount').value;
+  
+        try {
+          const res = await fetch('/api/portfolios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, accountId })
+          });
+  
+          if (res.ok) {
+            alert("Portfolio created successfully");
+            newPortfolioForm.reset();
+            document.getElementById('portfolioForm').style.display = 'none';
+            loadPortfolios();
+            loadPortfoliosToModal();
+          } else {
+            const result = await res.json();
+            alert("Error with creating portfolio: " + (result.message || "error"));
+          }
+        } catch (err) {
+          console.error("Portfolio creation failed:", err);
+          alert("Something went wrong.");
+        }
+      });
+    }
+  
+    //Modal handling
+    document.getElementById('openTradeModal')?.addEventListener('click', () => {
       document.getElementById('tradeModal').style.display = 'block';
     });
   
-    document.getElementById('closeTradeModal').addEventListener('click', () => {
+    document.getElementById('closeTradeModal')?.addEventListener('click', () => {
       document.getElementById('tradeModal').style.display = 'none';
     });
   
-    // === Autocomplete & price logic ===
+    // Autocomplete og prisberegning
     const searchInput = document.getElementById('search-stock');
     const suggestions = document.getElementById('stock-suggestions');
     const tickerInput = document.getElementById('ticker_symbol');
@@ -32,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const res = await fetch(`/api/stocks/search?q=${query}`);
           const matches = await res.json();
-  
           suggestions.innerHTML = '';
+  
           matches.forEach(stock => {
             const li = document.createElement('li');
             li.textContent = `${stock.name} (${stock.symbol})`;
@@ -68,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
       feeInput.value = fee.toFixed(2);
     }
   
-    // === Submit trade ===
-    document.getElementById('tradeForm').addEventListener('submit', async (e) => {
+    // Submit trade
+    document.getElementById('tradeForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
   
       const payload = {
@@ -104,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Load accounts
+  // Load accounts to select dropdown
   async function loadAccounts() {
     const res = await fetch('/api/accounts');
     const accounts = await res.json();
@@ -117,23 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  // Load all portfolios to table
   async function loadPortfolios() {
     const res = await fetch('/api/portfolios');
     const portfolios = await res.json();
     const tableBody = document.getElementById('portfolios-table');
     tableBody.innerHTML = '';
+  
     portfolios.forEach(p => {
+      const change = parseFloat(p.change24h);
+      const changeFormatted = isNaN(change) ? '-' : `${change.toFixed(2)}%`;
+      const changeClass = change > 0 ? 'text-green' : change < 0 ? 'text-red' : 'text-neutral';
+  
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${p.name}</td>
+        <td><a href="/portfolios/${p.portfolio_id}/details">${p.name}</a></td>
         <td>${p.account_name}</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
+        <td class="${changeClass}">${changeFormatted}</td>
+        <td>${p.last_trade ? new Date(p.last_trade).toLocaleString() : '-'}</td>
+        <td>${p.total_value ? parseFloat(p.total_value).toLocaleString() + ' DKK' : '-'}</td>
       `;
       tableBody.appendChild(row);
     });
   }
+  
+  
   
   async function loadAccountsToModal() {
     const res = await fetch('/api/accounts');
@@ -160,4 +207,59 @@ document.addEventListener('DOMContentLoaded', () => {
       select.appendChild(option);
     });
   }
+  
+  // PIE CHART VISNING 
+async function drawPortfolioDonutChart() {
+    try {
+      const res = await fetch('/api/portfolios/values');
+      const data = await res.json();
+  
+      if (!data || data.length === 0) return;
+  
+      const total = data.reduce((sum, p) => sum + p.value, 0);
+      const labels = data.map(p => p.portfolioName);
+      const values = data.map(p => p.value);
+      const percentages = data.map(p => ((p.value / total) * 100).toFixed(1) + '%');
+  
+      const ctx = document.getElementById('portfolioDonut')?.getContext('2d');
+      if (!ctx) return;
+  
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#9333ea'],
+          }]
+        },
+        options: {
+          responsive: true,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                generateLabels: function(chart) {
+                  return chart.data.labels.map((label, i) => ({
+                    text: `${label} (${percentages[i]})`,
+                    fillStyle: chart.data.datasets[0].backgroundColor[i],
+                    strokeStyle: '#000',
+                    lineWidth: 1
+                  }));
+                }
+              }
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Fejl ved hentning af porteføljeværdier:', err);
+    }
+  }
+  
+  // Kør funktionen når DOM er klar OBS på at flytte ind i anden DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    drawPortfolioDonutChart();
+  });
   

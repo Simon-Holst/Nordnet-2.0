@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= tickerSymbol %> - Kursudvikling</title>
+  <link rel="stylesheet" href="">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .chart-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 40px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="chart-container">
+    <a id="backToPortfolio" class="btn-outline">← Tilbage til porteføljen</a>
+
+    <h2>Udvikling for <%= tickerSymbol %></h2>
+    <canvas id="stockChart"></canvas>
+  </div>
+
+  <script>
+    const ticker = "<%= tickerSymbol %>";
+  
+    fetch(`/api/stocks/${ticker}/history`)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          document.querySelector('.chart-container').innerHTML = '<p>Der er desværre ingen kursdata tilgængelig for dette værdipapir.</p>';
+          return;
+        }
+  
+        const labels = data.map(d => d.date);
+        const prices = data.map(d => d.price);
+  
+        new Chart(document.getElementById('stockChart'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: `Kurs for ${ticker}`,
+              data: prices,
+              borderColor: '#3b82f6',
+              backgroundColor: 'transparent',
+              tension: 0.4,
+              borderWidth: 2,
+              pointRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: false,
+                title: {
+                  display: true,
+                  text: 'Pris (DKK)'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        console.error('Fejl ved hentning af kursdata:', err);
+        document.querySelector('.chart-container').innerHTML = '<p>Kursdata kunne ikke indlæses.</p>';
+      });
+
+  const params = new URLSearchParams(window.location.search);
+  const portfolioId = params.get("portfolioId");
+
+  if (portfolioId) {
+    document.getElementById("backToPortfolio").href = `/portfolios/${portfolioId}/details`;
+  } else {
+    document.getElementById("backToPortfolio").href = "/portfolios/view";
+  }
+  </script>
+  
+</body>
+</html>
