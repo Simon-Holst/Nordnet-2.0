@@ -5,9 +5,9 @@ const { sql, poolPromise } = require('../SQL/database.js');
 // Hent alle brugerens konti
 router.get('/', async (req, res) => {
     const userId = req.session.userId;
-
+// Hvis ikke logged in, returner 401
     if (!userId) return res.status(401).json({ message: "Not logged in" });
-
+// Hvis logged in, hent konti fra databasen som passer til user
     try {
         const pool = await poolPromise;
 
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
                 WHERE user_id = @userId
             `);
 
-        res.json(result.recordset);
+        res.json(result.recordset); // returner alle fundende kontier til user ID
     } catch (err) {
         console.error("SQL error (get accounts):", err);
         res.status(500).json({ message: "Error fetching accounts" });

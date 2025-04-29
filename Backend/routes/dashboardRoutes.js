@@ -47,11 +47,15 @@ router.get('/', async (req, res) => {
 
         if (t.trade_type === 'buy') {
           holdings[t.ticker_symbol].quantity += t.quantity;
-          holdings[t.ticker_symbol].cost += t.total_price;
+          holdings[t.ticker_symbol].cost += t.total_price + (t.fee || 0);
         } else if (t.trade_type === 'sell') {
-          holdings[t.ticker_symbol].quantity -= t.quantity;
-          // cost ændres IKKE ved salg
-        }
+            const holding = holdings[t.ticker_symbol];
+            if (holding.quantity > 0) {
+              const averageCostPerShare = holding.cost / holding.quantity;
+              holding.cost -= averageCostPerShare * t.quantity;
+            }
+            holding.quantity -= t.quantity;
+          }
       }
 
       for (const [symbol, data] of Object.entries(holdings)) {
