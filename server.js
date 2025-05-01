@@ -32,7 +32,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/api/trade", tradeRoutes);
 app.use("/api/stocks", stockRoutes);
-app.use("/api/portfolios", portfoliosRoutes);
+app.use("/portfolios", portfoliosRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/stocks", stockRoutes);
 
