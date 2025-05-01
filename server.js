@@ -11,7 +11,6 @@ const transactionRoutes = require('./Backend/routes/transactionRoutes.js');
 const portfoliosRoutes = require('./Backend/routes/portfoliosRoutes.js');
 const tradeRoutes = require('./Backend/routes/tradeRoutes.js');
 const stockRoutes = require('./Backend/routes/stockRoutes.js');
-const portfolioRoutes = require('./Backend/routes/portfoliosRoutes.js');
 const dashboardRoutes = require('./Backend/routes/dashboardRoutes.js');
 
 app.set("view engine", "ejs"); // Bruger EJS til at gengive HTML
@@ -33,7 +32,6 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/api/trade", tradeRoutes);
 app.use("/api/stocks", stockRoutes);
-app.use("/portfolios", portfolioRoutes);
 app.use("/api/portfolios", portfoliosRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/stocks", stockRoutes);

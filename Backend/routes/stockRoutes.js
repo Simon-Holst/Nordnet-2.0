@@ -2,14 +2,12 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 require('dotenv').config();
-
-
 const { getCurrentStockPrice } = require('../services/stockService');
 const { getHistoricalPrices } = require('../services/historicalPrices');
 
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY;
 
-// === SØGNING via Finnhub ===
+// Søgning via Finnhub
 router.get('/search', async (req, res) => {
   const query = req.query.q;
 

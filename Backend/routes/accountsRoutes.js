@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
         const pool = await poolPromise;
 
         const result = await pool.request()
-            .input('userId', sql.Int, userId)
+            .input('userId', sql.Int, userId) //input beskytter mod skadelig SQL
             .query(`
                 SELECT account_id, name, currency, balance, bank_name, Closed_at
                 FROM PortfolioTracker.Accounts
@@ -28,16 +28,16 @@ router.get('/', async (req, res) => {
 
 // Opret en ny konto
 router.post('/', async (req, res) => {
-    const { name, currency, balance, bank_name } = req.body;
-    const userId = req.session.userId;
-    const createdAt = new Date();
+    const { name, currency, balance, bank_name } = req.body; // tager oplysninger fra brugerens request
+    const userId = req.session.userId; // henter userId fra sessionen 
+    const createdAt = new Date(); // sætter createdAt til nuværende tidspunkt
 
-    if (!userId) return res.status(401).json({ message: "Not logged in" });
+    if (!userId) return res.status(401).json({ message: "Not logged in" }); // hvis brugeren ikke er logged in, returner 401
 
-    try {
-        const pool = await poolPromise;
+    try { // try at oprette forbindelse til databasen
+        const pool = await poolPromise; // venter på at forbindelsen til databasen er oprettet
 
-        await pool.request()
+        await pool.request() // opretter en request til databasen
             .input('userId', sql.Int, userId)
             .input('name', sql.VarChar, name)
             .input('currency', sql.VarChar, currency)
@@ -50,20 +50,21 @@ router.post('/', async (req, res) => {
                 VALUES (@userId, @name, @currency, @balance, @bank_name, @created_at)
             `);
 
-        res.status(201).json({ message: "Account created" });
+        res.status(201).json({ message: "Account created" }); // returner 201(created) hvis kontoen er oprettet
     } catch (err) {
         console.error("SQL error (create account):", err);
-        res.status(500).json({ message: "Error creating account" });
+        res.status(500).json({ message: "Error creating account" }); // ellers returner 500(server error) hvis der er en fejl
     }
 });
 // Luk eller åben med patch og if statement
-router.patch('/:id', async (req, res) => {
-    const accountId = parseInt(req.params.id);
-    const { status } = req.body;
+//patch endpoint fx /api/accounts/1 patch bruges til at opdaterer en konto
+router.patch('/:id', async (req, res) => { 
+    const accountId = parseInt(req.params.id); // henter accountId fra URL og konverterer til tal
+    const { status } = req.body; // henter status fra body (open/closed)
 
     try {
         const pool = await poolPromise;
-
+// hvis den ønskede status er closed, opdaterer den Closed_at kolonnen i databasen med nuværende tidspunkt
         if (status === 'closed') {
             await pool.request()
                 .input('accountId', sql.Int, accountId)
@@ -74,7 +75,7 @@ router.patch('/:id', async (req, res) => {
                     WHERE account_id = @accountId
                 `);
             res.json({ message: "Account closed" });
-
+// hvis den ønskede status er open, opdaterer den Closed_at kolonnen i databasen med null
         } else if (status === 'open') {
             await pool.request()
                 .input('accountId', sql.Int, accountId)
@@ -86,7 +87,7 @@ router.patch('/:id', async (req, res) => {
             res.json({ message: "Account reopened" });
 
         } else {
-            res.status(400).json({ message: "Invalid status" });
+            res.status(400).json({ message: "Invalid status" }); // bad request hvis status ikke er open/closed
         }
 
     } catch (err) {
@@ -94,5 +95,5 @@ router.patch('/:id', async (req, res) => {
         res.status(500).json({ message: "Error updating account status" });
     }
 });
-
+// eksporterer routeren så den kan bruges i andre filer
 module.exports = router;
