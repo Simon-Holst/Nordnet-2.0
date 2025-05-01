@@ -31,18 +31,17 @@
         <div class="top-cards">
             <div class="card">
                 <p class="card-title">Total value</p>
-                <p class="card-value" id="totalValue">-</p>
+                <p class="card-value"><%= totalValueDKK %> DKK</p>
             </div>
             <div class="card">
                 <p class="card-title">Realized profit</p>
-                <p class="card-value" id="realizedProfit">-</p>
+                <p class="card-value"><%= realizedProfitDKK %> DKK</p>
             </div>
             <div class="card">
                 <p class="card-title">Unrealized profit</p>
-                <p class="card-value" id="unrealizedProfit">-</p>
+                <p class="card-value"><%= unrealizedProfitDKK %> DKK</p>
             </div>
         </div>
-        
 
         <!-- Wrapper til tabeller -->
         <div class="tables-wrapper">
@@ -57,8 +56,15 @@
                             <th>Value</th>
                         </tr>
                     </thead>
-                    <tbody id="stocks-table">
-                        <!-- Data hentes dynamisk -->
+                    <tbody>
+                        <% topByValue.forEach(item => { %>
+                            <tr>
+                                <td><%= item.name %></td>
+                                <td><%= item.portfolio %></td>
+                                <td>-</td> <!-- Du kan opdatere 24h change senere -->
+                                <td><%= item.valueDKK %> DKK</td>
+                            </tr>
+                        <% }) %>
                     </tbody>
                 </table>
             </div>
@@ -74,8 +80,15 @@
                             <th>Value</th>
                         </tr>
                     </thead>
-                    <tbody id="profit-table">
-                        <!-- Data hentes dynamisk -->
+                    <tbody>
+                        <% topByProfit.forEach(item => { %>
+                            <tr>
+                                <td><%= item.name %></td>
+                                <td><%= item.portfolio %></td>
+                                <td>-</td>
+                                <td><%= item.profitDKK %> DKK</td>
+                            </tr>
+                        <% }) %>
                     </tbody>
                 </table>
             </div>
@@ -83,6 +96,5 @@
 
     </div>
 
-    <script src="/js/dashboard.js"></script>
 </body>
 </html>

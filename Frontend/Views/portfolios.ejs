@@ -13,8 +13,8 @@
 
     <div class="sidebar">
         <div class="sidebar-title-box">
-        <img src="/Pig-logo.png" alt="Pig Logo" class="sidebar-header-logo">
-        <h2>PortfolioTracker</h2>
+            <img src="/Pig-logo.png" alt="Pig Logo" class="sidebar-header-logo">
+            <h2>PortfolioTracker</h2>
         </div>
         <a href="/dashboard" class="sidebar-logo"> <img src="/Dashboard-logo.png" alt="Dashboard Logo">Dashboard</a>
         <a href="/accounts" class="sidebar-logo"> <img src="/Accounts-logo.png" alt="Accounts Logo">Accounts</a>
@@ -23,37 +23,58 @@
         <button id="closeSidebar"> Close</button>
     </div>
 
-
-    
-      
-
     <div class="main-content">
         <h1>Your Portfolios</h1>
 
-        
         <div class="button-container">
             <button id="openTradeModal">Register Trade</button>
+
             <button class="newPortfolio-btn">+ Add Portfolio</button> <br><br>
             
+
+
         </div>
+
+        <button class="newPortfolio-btn">+ Add Portfolio</button> 
+        <br><br>
 
 
         <div class="card">
             <h3>Fordeling af værdi i porteføljer</h3>
             <canvas id="portfolioDonut" width="400" height="200"></canvas>
-        </div>
 
+        <!-- 👇 FLEX container for DKK kort + Pie Chart -->
+        <div id="topCards" style="display: flex; gap: 20px; align-items: start; margin-bottom: 30px;">
+            <div id="dkkCardContainer" style="flex: 1;">
+                <!-- DKK kort bliver dynamisk tilføjet via JS -->
+            </div>
+
+            <div id="pieChartContainer" style="flex: 2;">
+                <div class="card">
+                    <h3>Fordeling af værdi i porteføljer</h3>
+                    <canvas id="portfolioDonut" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+        </div>
+        <!-- 👆 FLEX container slut -->
 
         <div id="portfolioForm" style="display: none;">
             <form id="newPortfolioForm">
                 <label for="portfolioName">Portfolio Name:</label>
                 <input type="text" id="portfolioName" name="name" required><br><br>
+
                 <label for="portfolioAccount">Select Account:</label>
                 <select id="portfolioAccount" name="accountId" required></select><br><br>
+
                 <button type="submit" class="submit-btn">Create Portfolio</button>
+
+
+                <button type="submit">Create Portfolio</button>
+
             </form>
         </div>
-    
+
         <div class="table-container">
             <h2>Portfolio Overview</h2>
             <table>
@@ -72,50 +93,47 @@
             </table>
         </div>
     </div>
-    
 
-<div id="tradeModal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <span id="closeTradeModal" class="close">&times;</span>
-      <h2>Register a Trade</h2>
-      <form id="tradeForm">
-        <label for="portfolio">Portfolio:</label>
-        <select id="portfolio" name="portfolioId" required></select><br><br>
-  
-        <label for="account">Account:</label>
-        <select id="account" name="accountId" required></select><br><br>
-  
-        <label for="trade_type">Trade Type:</label>
-        <select id="trade_type" name="trade_type" required>
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
-        </select><br><br>
-  
-        <label for="search-stock">Search Stock:</label>
-        <input type="text" id="search-stock" name="search-stock" autocomplete="off" placeholder="f.eks. Tesla, TSLA">
-        <ul id="stock-suggestions" class="suggestions-list"></ul>
-        
-        <!-- skjult felt der bliver udfyldt automatisk -->
-        <input type="hidden" id="ticker_symbol" name="ticker_symbol">
-  
-        <label for="security_type">Security Type:</label>
-        <input type="text" id="security_type" name="security_type" required><br><br>
-  
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" name="quantity" step="any" required><br><br>
-  
-        <label for="total_price">Total Price:</label>
-      <input type="number" id="total_price" name="total_price" step="any" readonly><br><br>
+    <div id="tradeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="closeTradeModal" class="close">&times;</span>
+            <h2>Register a Trade</h2>
+            <form id="tradeForm">
+                <label for="portfolio">Portfolio:</label>
+                <select id="portfolio" name="portfolioId" required></select><br><br>
 
-      <label for="fee">Fee (0.5%):</label>
-      <input type="number" id="fee" name="fee" step="any" readonly><br><br>
-  
-        <button type="submit">Submit Trade</button>
-      </form>
+                <label for="account">Account:</label>
+                <select id="account" name="accountId" required></select><br><br>
+
+                <label for="trade_type">Trade Type:</label>
+                <select id="trade_type" name="trade_type" required>
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                </select><br><br>
+
+                <label for="search-stock">Search Stock:</label>
+                <input type="text" id="search-stock" name="search-stock" autocomplete="off" placeholder="f.eks. Tesla, TSLA">
+                <ul id="stock-suggestions" class="suggestions-list"></ul>
+
+                <input type="hidden" id="ticker_symbol" name="ticker_symbol">
+
+                <label for="security_type">Security Type:</label>
+                <input type="text" id="security_type" name="security_type" required><br><br>
+
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" step="any" required><br><br>
+
+                <label for="total_price">Total Price:</label>
+                <input type="number" id="total_price" name="total_price" step="any" readonly><br><br>
+
+                <label for="fee">Fee (0.5%):</label>
+                <input type="number" id="fee" name="fee" step="any" readonly><br><br>
+
+                <button type="submit">Submit Trade</button>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <script src="/js/portfolio.js"></script>
-
+    <script src="/js/portfolio.js"></script>
 </body>
 </html>

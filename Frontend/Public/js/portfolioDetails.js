@@ -1,10 +1,28 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const portfolioId = document.body.dataset.portfolioId;
   
-    // Hent aktier i porteføljen
+    // Hent aktier + total value i porteføljen
     const res = await fetch(`/api/portfolios/${portfolioId}/stocks`);
-    const stocks = await res.json();
+    const data = await res.json();
   
+    console.log("Stocks response:", data);
+  
+    const stocks = data.holdings; // <-- Vi skal bruge holdings-arrayet!
+    const totalValueUSD = data.totalValueUSD;
+    const totalValueDKK = data.totalValueDKK;
+  
+    // Vis samlet værdi i kort
+    const dkkCard = document.getElementById('dkkValueCard');
+    if (dkkCard) {
+      dkkCard.innerHTML = `DKK ${parseFloat(totalValueDKK).toLocaleString('da-DK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+  
+    const usdCard = document.getElementById('usdValueCard');
+    if (usdCard) {
+      usdCard.innerHTML = `USD ${parseFloat(totalValueUSD).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+  
+    // Indsæt aktier i tabel
     const tableBody = document.getElementById('stocksTableBody');
     const chartLabels = [];
     const chartData = [];
@@ -30,28 +48,30 @@ document.addEventListener('DOMContentLoaded', async () => {
       chartData.push(parseFloat(stock.expectedValue));
     });
   
-    // PIE CHART – aktiefordeling
-    const pieCtx = document.getElementById('pieChart').getContext('2d');
-    new Chart(pieCtx, {
-      type: 'doughnut',
-      data: {
-        labels: chartLabels,
-        datasets: [{
-          data: chartData,
-          backgroundColor: ['#f39c12', '#2ecc71', '#3498db', '#e74c3c', '#9b59b6'],
-          hoverOffset: 6
-        }]
-      },
-      options: {
-        plugins: {
-          legend: {
-            labels: { color: 'white' }
+    // PIE CHART – aktiefordeling 
+    const pieCtx = document.getElementById('pieChart')?.getContext('2d');
+    if (pieCtx) {
+      new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            data: chartData,
+            backgroundColor: ['#f39c12', '#2ecc71', '#3498db', '#e74c3c', '#9b59b6'],
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          plugins: {
+            legend: {
+              labels: { color: 'white' }
+            }
           }
         }
-      }
-    });
+      });
+    }
   
-    // LINE CHART – historisk udvikling
+    // === LINE CHART – historisk udvikling 
     await drawPortfolioHistoryChart(portfolioId);
   });
   
@@ -71,35 +91,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     const labels = data.map(d => d.date);
     const values = data.map(d => d.value);
   
-    const lineCtx = document.getElementById('lineChart').getContext('2d');
-    new Chart(lineCtx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Porteføljens værdi (urealiseret)',
-          data: values,
-          borderColor: '#2ecc71',
-          borderWidth: 2,
-          tension: 0.2,
-          fill: false
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            labels: { color: 'white' }
-          }
+    const lineCtx = document.getElementById('lineChart')?.getContext('2d');
+    if (lineCtx) {
+      new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Porteføljens værdi (urealiseret)',
+            data: values,
+            borderColor: '#2ecc71',
+            borderWidth: 2,
+            tension: 0.2,
+            fill: false
+          }]
         },
-        scales: {
-          x: { ticks: { color: 'white' } },
-          y: {
-            ticks: { color: 'white' },
-            beginAtZero: false
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: { color: 'white' }
+            }
+          },
+          scales: {
+            x: { ticks: { color: 'white' } },
+            y: {
+              ticks: { color: 'white' },
+              beginAtZero: false
+            }
           }
         }
-      }
-    });
+      });
+    }
   }
   
