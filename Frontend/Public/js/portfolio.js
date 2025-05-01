@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPortfolios();
     loadAccountsToModal();
     loadPortfoliosToModal();
-    drawPortfolioDonutChart(); // ← Tilføjet korrekt her
+    drawPortfolioDonutChart();
   
     // Ny portfolio visning toggle
     document.querySelector('.newPortfolio-btn')?.addEventListener('click', () => {
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   });
   
-  // === Udenfor DOMContentLoaded ===
+  // Udenfor DOMContentLoaded
   
   async function loadAccounts() {
     const res = await fetch('/api/accounts');
