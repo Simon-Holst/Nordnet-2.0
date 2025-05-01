@@ -8,12 +8,29 @@
 </head>
 <body data-portfolio-id="<%= portfolioId %>">
 
+
+
   <div class="main-content">
 
     <h1><%= portfolioName %> Portfolio</h1>
 
     <!-- Værdi over tid (Line chart) -->
     <div class="chart-box">
+      <a id="backToPortfolio" class="back-btn">← Back to portfolios</a>
+
+      <!-- OBS!!!!!!!-->
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const portfolioId = params.get("portfolioId");
+
+  if (portfolioId) {
+    document.getElementById("backToPortfolio").href = `/portfolios/${portfolioId}/details`;
+  } else {
+    document.getElementById("backToPortfolio").href = "/portfolios/view";
+  }
+</script>
+
+
       <h2>Samlet Værdi af portefølje</h2>
       <canvas id="lineChart" width="600" height="200"></canvas>
     </div>

@@ -324,6 +324,5 @@ router.get('/:id/history', async (req, res) => {
       res.status(500).json({ message: 'Fejl ved hentning af historik' });
     }
   });
-  
 
 module.exports = router;

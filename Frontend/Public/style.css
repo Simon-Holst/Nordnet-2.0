@@ -393,4 +393,35 @@ h1 {
     justify-content: space-between;
     align-items: center;
     margin: 0 10px 20px;
-  }
+}
+
+.back-btn {
+  background: rgb(66, 65, 65);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+  margin: 10px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  background: #7A5EC8;
+}
+
+.styled-select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  color: #333;
+  width: 100%;
+  box-sizing: border-box;
+}
