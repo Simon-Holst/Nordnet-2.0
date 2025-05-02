@@ -104,18 +104,18 @@ body {
     color: white;
 }
 
-/* Styling for tabeller */
+
 .tables-wrapper {
     display: flex;
     justify-content: space-between;
-    gap: 20px; /* Afstand mellem tabellerne */
+    gap: 20px; 
     width: 90%;
     max-width: 900px;
-    margin: 0 auto; /* Centrerer tabellerne */
+    margin: 0 auto; 
 }
 
 .table-container {
-    width: 48%; /* Sørg for, at de fylder pladsen jævnt */
+    width: 48%; 
 }
 
 table {
@@ -214,8 +214,7 @@ h1 {
     background-color: grey;
   }
 
-  #openTradeModal,
-  .newPortfolio-btn {
+  .standard-btn {
     background: rgb(66, 65, 65);
     color: white;
     padding: 10px 20px;
@@ -229,13 +228,12 @@ h1 {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-  #openTradeModal:hover,
-  .newPortfolio-btn:hover {
-    transform: translateY(-2px);
-    background: #7A5EC8;
+.standard-btn:hover {
+  transform: translateY(-2px);
+  background: #7A5EC8;
 }
   
-#toggleAccountForm {
+#toggleAccountForm { /*Knap forenkles*/
     background: rgb(66, 65, 65);
     color: white;
     padding: 10px 20px;
@@ -261,7 +259,7 @@ h1 {
   }
   
 
-  #toggleTransactionHistory {
+  #toggleTransactionHistory { /*knap forenkles*/
     background: rgb(66, 65, 65);
     color: white;
     padding: 10px 20px;
@@ -395,7 +393,7 @@ h1 {
     margin: 0 10px 20px;
 }
 
-.back-btn {
+.back-btn { /*knap forenkles */ 
   background: rgb(66, 65, 65);
   color: white;
   padding: 10px 20px;
