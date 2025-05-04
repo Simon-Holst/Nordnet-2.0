@@ -1,15 +1,16 @@
 const fetch = require('node-fetch');
 require('dotenv').config();
 const { sql, poolPromise } = require('../SQL/database');
-
+// api nøgle
 const EXCHANGE_API_KEY = process.env.EXCHANGE_API_KEY;
 
-// Funktion til at hente fra API
+// Funktion til at hente fra API tager imod base og target valuta som parametre
 async function fetchExchangeRateFromAPI(base, target) {
+// Bygger URL'en til API'et
     const url = `https://v6.exchangerate-api.com/v6/${EXCHANGE_API_KEY}/pair/${base}/${target}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
+    const response = await fetch(url); // henter data fra API'et
+    const data = await response.json(); // konverterer til javascript objekt
+// Tjekker om der er fejl i API-anmodningen
     if (data.result === 'success') {
         return data.conversion_rate;
     } else {
@@ -19,6 +20,7 @@ async function fetchExchangeRateFromAPI(base, target) {
 
 // Funktion til at hente fra database eller API hvis nødvendigt
 async function getExchangeRate(base, target) {
+// Tjekker om base og target valuta er angivet
     if (!base || !target) {
         throw new Error('Base and target currencies must be provided');
     }
@@ -33,6 +35,7 @@ async function getExchangeRate(base, target) {
     const result = await pool.request()
         .input('base_currency', sql.VarChar, base)
         .input('target_currency', sql.VarChar, target)
+    // Henter den nyeste kurs for den ønskede valuta par
         .query(`
             SELECT rate
             FROM PortfolioTracker.exchange_rates
@@ -40,7 +43,7 @@ async function getExchangeRate(base, target) {
             ORDER BY timestamp DESC
             OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
         `);
-
+// hvis kursen findes returner den uden at hente fra API
     if (result.recordset.length > 0) {
         return result.recordset[0].rate;
     } else {
