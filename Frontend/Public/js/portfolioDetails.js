@@ -1,32 +1,27 @@
+// koden venter på at DOM'en er indlæst, før den kører
 document.addEventListener('DOMContentLoaded', async () => {
+// henter portfolioId fra body elementet bruges til hente portføljens aktier 
     const portfolioId = document.body.dataset.portfolioId;
   
     // Hent aktier + total value i porteføljen
-    const res = await fetch(`/api/portfolios/${portfolioId}/stocks`);
-    const data = await res.json();
+    const res = await fetch(`/api/portfolios/${portfolioId}/stocks`); 
+    const data = await res.json(); // retunerer holdings og totalValueUSD og totalValueDKK
   
-    console.log("Stocks response:", data);
-  
-    const stocks = data.holdings; // <-- Vi skal bruge holdings-arrayet!
-    const totalValueUSD = data.totalValueUSD;
+    // udtrækker aktierne og total værdierne fra data
+    const stocks = data.holdings;
     const totalValueDKK = data.totalValueDKK;
   
-    // Vis samlet værdi i kort
+    // Vis samlet værdi i kort 
     const dkkCard = document.getElementById('dkkValueCard');
     if (dkkCard) {
       dkkCard.innerHTML = `DKK ${parseFloat(totalValueDKK).toLocaleString('da-DK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
-  
-    const usdCard = document.getElementById('usdValueCard');
-    if (usdCard) {
-      usdCard.innerHTML = `USD ${parseFloat(totalValueUSD).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-  
-    // Indsæt aktier i tabel
+    
+    // Indsæt aktier i tabel ved at finde table body elementet og tilføje rækker
     const tableBody = document.getElementById('stocksTableBody');
-    const chartLabels = [];
-    const chartData = [];
-  
+    const chartLabels = []; // labels til pie chart
+    const chartData = []; // data til pie chart
+    // loop gennem aktierne og tilføj dem til tabellen (viser urealiseret gevinst i %)
     stocks.forEach(stock => {
       const row = document.createElement('tr');
       row.innerHTML = `
@@ -43,22 +38,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>${stock.expectedValue} USD</td>
       `;
       tableBody.appendChild(row);
-  
+  // tilføj aktien til pie chart labels og data
       chartLabels.push(stock.ticker);
       chartData.push(parseFloat(stock.expectedValue));
     });
   
-    // PIE CHART – aktiefordeling 
+    // PIE CHART – aktiefordeling finder pie chart canvas elementet og opretter en ny Chart (? sikker mod fejl)
     const pieCtx = document.getElementById('pieChart')?.getContext('2d');
     if (pieCtx) {
       new Chart(pieCtx, {
         type: 'doughnut',
         data: {
-          labels: chartLabels,
+          labels: chartLabels, // labels til pie chart
           datasets: [{
-            data: chartData,
+            data: chartData, // data til pie chart
             backgroundColor: ['#f39c12', '#2ecc71', '#3498db', '#e74c3c', '#9b59b6'],
-            hoverOffset: 6
           }]
         },
         options: {
@@ -70,27 +64,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
     }
-  
-    // === LINE CHART – historisk udvikling 
+    //LINE CHART – historisk udvikling 
     await drawPortfolioHistoryChart(portfolioId);
   });
   
   async function drawPortfolioHistoryChart(portfolioId) {
+// henter historiske data fra API'et med portfolioId
     const res = await fetch(`/api/portfolios/${portfolioId}/history`);
-    const data = await res.json();
-  
+    const data = await res.json(); 
+// hvis der ingen data er, vis besked i grafen forhindrer i at vise tom eller ødelagt graf
     if (!data.length) {
       const chartBox = document.querySelector('.chart-box');
       const message = document.createElement('p');
-      message.textContent = 'Ingen historiske data endnu.';
+      message.textContent = 'No history data yet.';
       message.style.color = 'white';
       chartBox.appendChild(message);
       return;
     }
   
-    const labels = data.map(d => d.date);
-    const values = data.map(d => d.value);
-  
+    const labels = data.map(d => d.date); // labels til x-aksen
+    const values = data.map(d => d.value); // y-aksen værdierne
+// finder line chart canvas elementet og opretter en ny Chart
     const lineCtx = document.getElementById('lineChart')?.getContext('2d');
     if (lineCtx) {
       new Chart(lineCtx, {
@@ -98,11 +92,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         data: {
           labels,
           datasets: [{
-            label: 'Porteføljens værdi (urealiseret)',
-            data: values,
-            borderColor: '#2ecc71',
-            borderWidth: 2,
-            tension: 0.2,
+            label: 'Portfolio value (USD)', // label til grafen
+            data: values, // y-aksen værdierne
+            borderColor: '#2ecc71', // farven på linjen
+            borderWidth: 2, // tykkelsen på linjen
+            tension: 0.2, // glathed på linjen for at undgå knæk
             fill: false
           }]
         },

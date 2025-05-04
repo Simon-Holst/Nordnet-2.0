@@ -21,22 +21,22 @@ export async function handleLogin(event) {
         alert(data.error || 'Login failed');
     }
 }
-
+// funktion til at håndtere registrering
 export async function handleRegister(event) {
     event.preventDefault();
-
+// henter input fra html formularen email, username og password
     const email = document.getElementById('email').value;
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-
+// sender en fetch request til serveren med email, username og password
     const response = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, username, password })
+        headers: { 'Content-Type': 'application/json' }, // angiver at vi sender json data
+        body: JSON.stringify({ email, username, password }) 
     });
 
     const data = await response.json();
-
+// modtager svaret fra serveren hvis svaret er ok så redirecter vi til login ellers viser en fejl
     if (response.ok) {
         window.location.href = '/'; // Redirect til login
     } else {
