@@ -101,21 +101,20 @@ body {
     font-size: 20px;
     font-weight: bold;
     margin-top: 5px;
-    color: white;
 }
 
-/* Styling for tabeller */
+
 .tables-wrapper {
     display: flex;
     justify-content: space-between;
-    gap: 20px; /* Afstand mellem tabellerne */
+    gap: 20px; 
     width: 90%;
     max-width: 900px;
-    margin: 0 auto; /* Centrerer tabellerne */
+    margin: 0 auto; 
 }
 
 .table-container {
-    width: 48%; /* Sørg for, at de fylder pladsen jævnt */
+    width: 48%; 
 }
 
 table {
@@ -214,8 +213,7 @@ h1 {
     background-color: grey;
   }
 
-  #openTradeModal,
-  .newPortfolio-btn {
+  .standard-btn {
     background: rgb(66, 65, 65);
     color: white;
     padding: 10px 20px;
@@ -229,50 +227,18 @@ h1 {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-  #openTradeModal:hover,
-  .newPortfolio-btn:hover {
-    transform: translateY(-2px);
-    background: #7A5EC8;
-}
-  
-#toggleAccountForm {
-    background: rgb(66, 65, 65);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-#toggleAccountForm:hover {
-    transform: translateY(-2px);
-    background: #7A5EC8;
+.standard-btn:hover {
+  transform: translateY(-2px);
+  background: #7A5EC8;
 }
 
 .transaction-form {
     display: flex;
     align-items: center;
     gap: 20px;
+    margin-left: 105px; 
   }
   
-
-  #toggleTransactionHistory {
-    background: rgb(66, 65, 65);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
-  }
   .text-green {
     color: #00c853; 
   }
@@ -281,11 +247,6 @@ h1 {
   }
   .text-neutral {
     color: #ffffff;
-  }
-  
-  #toggleTransactionHistory:hover {
-    transform: translateY(-2px);
-    background: #7A5EC8;
   }
 
 .toggle-status-btn {
@@ -384,35 +345,12 @@ h1 {
     align-self: center;
 }
 
-.transaction-form {
-    margin-left: 105px; 
-}
 
 .table-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 0 10px 20px;
-}
-
-.back-btn {
-  background: rgb(66, 65, 65);
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline-block;
-  margin: 10px 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.back-btn:hover {
-  transform: translateY(-2px);
-  background: #7A5EC8;
 }
 
 .styled-select {
