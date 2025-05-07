@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       chartData.push(parseFloat(stock.expectedValue));
     });
   
-    // PIE CHART – aktiefordeling finder pie chart canvas elementet og opretter en ny Chart (? sikker mod fejl)
+    // PIE CHART – aktiefordeling finder pie chart canvas elementet og opretter en ny Chart (? sikre mod fejl)
     const pieCtx = document.getElementById('pieChart')?.getContext('2d');
     if (pieCtx) {
       new Chart(pieCtx, {
@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
   
-    const labels = data.map(d => d.date); // labels til x-aksen
+    // labels til x-aksen med formattering til dansk datoformat
+    const labels = data.map(d => new Date(d.date).toLocaleDateString('da-DK', { }));
     const values = data.map(d => d.value); // y-aksen værdierne
 // finder line chart canvas elementet og opretter en ny Chart
     const lineCtx = document.getElementById('lineChart')?.getContext('2d');
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       new Chart(lineCtx, {
         type: 'line',
         data: {
-          labels,
+          labels, // x-aksen labels
           datasets: [{
             label: 'Portfolio value (USD)', // label til grafen
             data: values, // y-aksen værdierne

@@ -14,7 +14,7 @@ const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY;
 router.get('/search', async (req, res) => {
   const query = req.query.q; // henter query fra URL'en (symbol)
 
-  if (!query) { // hvis query ikke er angivet retuner fejæ
+  if (!query) { // hvis query ikke er angivet retuner fejl
     return res.status(400).json({ error: 'Query parameter is required' });
   }
 
@@ -54,6 +54,8 @@ router.get('/:symbol', async (req, res) => {
     res.status(500).json({ error: 'Could not fetch stock data' });
   }
 });
+
+
 // Get til at hente historiske aktiekurser
 router.get('/:ticker/history', async (req, res) => {
   try {

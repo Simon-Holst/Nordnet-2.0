@@ -48,7 +48,7 @@ router.get('/', async (req, res) => { // når bruger går til /dashboard
 // Hvis det er en buy trade, opdaterer holdings med quantity og cost ved at lægge trade værdierne til holdings
         if (t.trade_type === 'buy') {
           holdings[t.ticker_symbol].quantity += t.quantity;
-          holdings[t.ticker_symbol].cost += t.total_price + (t.fee || 0); // ekstra sikkermed med || 0 //OBS
+          holdings[t.ticker_symbol].cost += t.total_price + (t.fee || 0); // ekstra sikkermed med || 0 
 // Hvis det er en sell trade, opdaterer holdings med quantity og cost ved at trække trade værdierne fra holdings
         } else if (t.trade_type === 'sell') {
             const holding = holdings[t.ticker_symbol];

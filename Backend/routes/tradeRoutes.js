@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
   try {
     const pool = await poolPromise;
 
-    // 1. Hent kontoen henter balanca, cloed_at og currency
+    // 1. Hent kontoens henter balance, closed_at og currency
     const result = await pool.request()
       .input('accountId', sql.Int, accountId)
       .query(`
@@ -69,6 +69,31 @@ router.post('/', async (req, res) => {
     if (isBuy && account.balance < Math.abs(adjustedAmount)) {
       return res.status(400).json({ message: "Insufficient funds for this trade" });
     }
+    // 5b. Tjek om der er nok aktier til salg
+    // her summeres alle tidligere køb og salg fratrækkes fra det samlede antal aktier
+    //for det valgt symbol i den valgte portfolio 
+    if (!isBuy) {
+        const holdingsResult = await pool.request()
+          .input('portfolioId', sql.Int, portfolioId)
+          .input('ticker_symbol', sql.VarChar, ticker_symbol)
+          .query(`
+            SELECT 
+              SUM(CASE 
+                    WHEN trade_type = 'buy' THEN quantity 
+                    WHEN trade_type = 'sell' THEN -quantity 
+                    ELSE 0 
+                  END) AS net_quantity
+            FROM PortfolioTracker.Trades
+            WHERE portfolio_id = @portfolioId AND ticker_symbol = @ticker_symbol
+          `);
+      
+        // hvis der ikke er nok aktier til salg af det valgte symbol, returner en fejl
+          const netQuantity = holdingsResult.recordset[0]?.net_quantity || 0; //hvis holdingsResult er undefined eller null, så sæt netQuantity til 0
+        if (netQuantity < parsedQuantity) {
+          return res.status(400).json({ message: 'Youre trying to sell more stocks than you own in this portfolio' });
+        }
+      }
+
 // beregner den nye saldo account.balance er kontoens balance og adjustedAmount er det beløb der skal trækkes fra eller lægges til
     const newBalance = account.balance + adjustedAmount;
 
