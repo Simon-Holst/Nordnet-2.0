@@ -48,6 +48,11 @@ router.get('/:symbol', async (req, res) => {
   
   try {
     const data = await getCurrentStockPrice(symbol); // henter aktuel aktiekurs
+    
+    if (!data || !data.price) {
+      console.log(`No stock data found for symbol: ${symbol}`);
+      return res.status(500).json({ error: 'Could not fetch stock data' });
+    }
     res.json(data); // retunere data 
   } catch (err) {
     console.error('Error while fetching stock data:', err.message || err);

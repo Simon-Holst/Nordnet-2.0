@@ -23,6 +23,7 @@ app.use(session({
     secret: "Hemmelig_nøgle",
     resave: false,
     saveUninitialized: true,
+    cookie: { secure: false } 
 }))
 
 app.use(express.json())
@@ -37,6 +38,7 @@ app.use("/api/stocks", stockRoutes);
 app.use("/portfolios", portfoliosRoutes);
 app.use("/dashboard", dashboardRoutes);
 app.use("/stocks", stockRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 
 
@@ -48,6 +50,14 @@ app.use("/stocks", stockRoutes);
       res.render('login', { error: null });
     }
   });
+
+  // Render login-siden
+app.get('/login', (req, res) => {
+  console.log("GET /login blev kaldt"); // 🔍 Debugging
+  res.render('login', { error: null });
+});
+
+  
 // render register siden
   app.get("/register", (req, res) => {
     res.render("register", { error: null });
@@ -69,7 +79,7 @@ app.get("/accounts", (req, res) => {
   });
 
   module.exports = app; // Eksporterer app til test
-  
+
 // lytter på port 3000
 app.listen(port, () => {
     console.log(`Serveren kører på http://localhost:${port}`);

@@ -6,6 +6,7 @@ export async function handleLogin(event) {
 // hender input fra html formularen username og password
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
+
 //sender en fetch request til serveren med username og password
     const response = await fetch('/api/auth/login', {
         method: 'POST',

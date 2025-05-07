@@ -34,7 +34,7 @@ describe('Register routes', () => {
         .end((err, res) => {
           if (err) return done(err);
   
-          expect(res.body.error).to.equal('Username or email already taken');
+          expect(res.body.error).to.equal('User creation failed: Username or email already taken');
           done();
         });
     });
