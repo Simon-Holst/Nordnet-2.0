@@ -67,6 +67,9 @@ app.get("/accounts", (req, res) => {
       res.redirect('/');
     });
   });
+
+  module.exports = app; // Eksporterer app til test
+  
 // lytter på port 3000
 app.listen(port, () => {
     console.log(`Serveren kører på http://localhost:${port}`);
