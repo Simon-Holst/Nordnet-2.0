@@ -26,7 +26,7 @@ class User {
         throw new Error('Username or email already taken');
       }
 
-      //Opret brugeren**
+      //Opret brugeren
       await pool.request()
         .input('username', sql.VarChar, this.username)
         .input('password', sql.VarChar, this.password)

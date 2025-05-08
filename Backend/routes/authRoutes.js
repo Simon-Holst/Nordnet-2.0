@@ -6,7 +6,6 @@ const User = require('../models/user'); // Importer User-modellen
 // Registrer en ny bruger
 router.post('/register', async (req, res) => {
     const { username, password, email } = req.body;
-  
     try {
       const user = new User(username, password, email);
       await user.create();
