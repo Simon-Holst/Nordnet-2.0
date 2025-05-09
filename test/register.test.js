@@ -1,10 +1,10 @@
 const request = require('supertest');
 const app = require('../server.js'); 
 const { expect } = require('chai');
-const {poolPromise} = require('../Backend/SQL/database.js'); // Importer din database forbindelse
+const {poolPromise} = require('../Backend/SQL/database.js');
 
 describe('Register routes', () => {
-  
+  // Test: Register bruger som ikke findes
     it('Should register a new user with correct information', (done) => {
       request(app)
         .post('/api/auth/register')
@@ -21,7 +21,7 @@ describe('Register routes', () => {
         })
         .end(done);
     });
-  
+  // Test: Register bruger som allerede findes
     it('Should not register a user with an existing username', (done) => {
       request(app)
         .post('/api/auth/register')
@@ -39,7 +39,7 @@ describe('Register routes', () => {
         });
     });
 
-    // Slet brugeren direkte i databasen
+    // Sletter brugeren direkte i databasen
     after(async () => {
         try {
           const pool = await poolPromise;

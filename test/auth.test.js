@@ -1,10 +1,10 @@
 const request = require('supertest');
-const app = require('../server.js'); // Importer din server
+const app = require('../server.js'); 
 const { expect } = require('chai');
 
 describe('Auth Routes', () => {
 
-  // Test: Login med korrekt information**
+  // Test: Login med korrekt information
   it('Should log in with correct information', (done) => {
     request(app)
       .post('/api/auth/login')
@@ -12,7 +12,7 @@ describe('Auth Routes', () => {
         username: 'admin',
         password: '1234'
       })
-      .expect(200) // Forventer en 200 OK
+      .expect(200) 
       .expect((res) => {
         if (!res.body.message) {
           throw new Error('Login failed');
@@ -21,7 +21,7 @@ describe('Auth Routes', () => {
       .end(done);
   });
 
-  // Test: Login med forkert information**
+  // Test: Login med forkert information
   it('Should not log in with wrong information', (done) => {
     request(app)
       .post('/api/auth/login')
