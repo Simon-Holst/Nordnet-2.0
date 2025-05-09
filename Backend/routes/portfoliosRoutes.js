@@ -118,7 +118,7 @@ router.get('/', requireLogin, async (req, res) => { // requireLogin sikrer at br
       let lastTradeDate = null; // dato for seneste handel
       let change24hSum = 0; // Bruges til beregnings over 24 timer
       let changeCount = 0;
-// OBS i rapporten om forskellige måder at løse på
+
 
       for (const trade of trades.recordset) { // går gennem handler 
         if (!holdings[trade.ticker_symbol]) { // hvis ticker symbol ikke findes oprettes dette.
