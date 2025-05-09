@@ -61,7 +61,7 @@ class User {
     try {
       const user = await User.findByUsername(username);
       if (user && user.password === password) {
-    console.log("Autentificeret bruger:", user);
+   
     return {
         id: user.user_id, 
         username: user.username,

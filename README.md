@@ -18,6 +18,9 @@ indtast i terminalen ```node server.js```
 Test
 indtast i terminalen ```npm test```
 
+I tilfælde af problmer:
+- Hvis der kommer en database timeout ```ctrl c```og kør server igen
+- Hvis handler forsager problemer ```ctrl c```og ```node server.js```
 
 ```Mappestruktur:
 ├── Backend/              

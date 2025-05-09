@@ -51,11 +51,6 @@ app.use("/dashboard", dashboardRoutes);
     }
   });
 
-  // Render login-siden
-app.get('/login', (req, res) => {
-  res.render('login', { error: null });
-});
-
 // render register siden
   app.get("/register", (req, res) => {
     res.render("register", { error: null });

@@ -28,7 +28,7 @@
     fetch(`/api/stocks/${ticker}/history`)
       .then(res => res.json())
       .then(data => {
-        if (!Array.isArray(data) || data.length === 0) {
+        if (data.length === 0) {
           document.querySelector('.chart-container').innerHTML = '<p>Der er desværre ingen kursdata tilgængelig for dette værdipapir.</p>';
           return;
         }
@@ -83,7 +83,7 @@
     document.getElementById("backToPortfolio").href = "/portfolios/view";
   }
   </script>
-  <!-- OBS!!!! -->
+  
   
 </body>
 </html>

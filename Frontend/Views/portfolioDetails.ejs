@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title><%= portfolioName %> - Portfolio</title>
+  <title>
+    <%= portfolioName %> - Portfolio
+  </title>
   <link rel="stylesheet" href="/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body data-portfolio-id="<%= portfolioId %>">
 
 
 
   <div class="main-content">
 
-    <h1><%= portfolioName %> Portfolio</h1>
+    <h1>
+      <%= portfolioName %> Portfolio
+    </h1>
 
     <!-- Værdi over tid (Line chart) -->
     <div class="chart-box">
       <a id="backToPortfolio" class="standard-btn">← Back to portfolios</a>
 
-      <!-- OBS!!!!!!!-->
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const portfolioId = params.get("portfolioId");
 
-  if (portfolioId) {
-    document.getElementById("backToPortfolio").href = `/portfolios/${portfolioId}/details`;
-  } else {
-    document.getElementById("backToPortfolio").href = "/portfolios/view";
-  }
-</script>
+      <script>
+        document.getElementById("backToPortfolio").href = "/portfolios/view";
+      </script>
 
 
       <h2>Total Value of Portfolio</h2>
@@ -64,4 +63,5 @@
 
   <script src="/js/portfolioDetails.js"></script>
 </body>
+
 </html>

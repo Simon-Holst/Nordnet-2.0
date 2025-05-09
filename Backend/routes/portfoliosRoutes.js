@@ -245,7 +245,7 @@ router.get('/:id/stocks', async (req, res) => {
   });
   
 
-//GET: EJS-detaljevisning
+//GET: detaljevisning
 router.get('/:id/details', async (req, res) => {
   const portfolioId = parseInt(req.params.id); // henter portfolio id 
   const pool = await poolPromise;
