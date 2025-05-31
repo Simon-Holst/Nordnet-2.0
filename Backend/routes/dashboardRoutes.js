@@ -16,48 +16,48 @@ router.get('/', async (req, res) => { // når bruger går til /dashboard
     const pool = await poolPromise;
 // henter alle portfolios fra databasen som tilhører brugeren
     const portfoliosResult = await pool.request()
-      .input('userId', sql.Int, userId)
+      .input('userId', sql.Int, userId) // tilføjer brugerens ID som inputparameter for sikkerhed
       .query(`
-        SELECT p.portfolio_id, p.name
+        SELECT p.portfolio_id, p.name 
         FROM PortfolioTracker.Portfolios p
         WHERE p.user_id = @userId
-      `);
+      `); // p er en alias – altså et kort navn for tabellen
 // resultatet gemmes som portfolios
-    const portfolios = portfoliosResult.recordset;
-    let totalValueUSD = 0; // samlede værdi i USD
-    let unrealizedProfitUSD = 0; // urealiseret profit i USD
-    let realizedProfitUSD = 0; // samlet realiseret profit i USD
-    const allSecurities = []; // array til at gemme alle værdipapirer
+    const portfolios = portfoliosResult.recordset; // Sætter variblen portfolios til at være portfoliosResult.recordset. Altså recordset er resultatet af sql query
+    let totalValueUSD = 0; // samlede værdi i USD sættes til nul
+    let unrealizedProfitUSD = 0; // urealiseret profit i USD sættes til nul
+    let realizedProfitUSD = 0; // samlet realiseret profit i USD sættes til nul
+    const allSecurities = []; // tomt array til at gemme alle værdipapirer
 // alle trades hentes fra databasen for hver portfolio
-    for (const p of portfolios) {
-      const tradesResult = await pool.request()
-        .input('portfolioId', sql.Int, p.portfolio_id)
+    for (const p of portfolios) { // for of loop
+      const tradesResult = await pool.request() // Forbinder til databasen, genbruger eksisterende forbindelse
+        .input('portfolioId', sql.Int, p.portfolio_id) // Forhindrer skadeligt sql
         .query(`
           SELECT trade_type, ticker_symbol, quantity, total_price
           FROM PortfolioTracker.Trades
           WHERE portfolio_id = @portfolioId
-        `);
+        `); // Med sql query selectes trade_type, ticker_symbol, quantity, total_price fra Trades hvor portefølge_id'et passer  
 // tradesResult gemmes som trades 
-      const trades = tradesResult.recordset;
+      const trades = tradesResult.recordset; // Gemmer resultat fra query
       const holdings = {}; // holdings til at gemme hvad brugeren aktuelt ejer
         
-      for (const t of trades) {
+      for (const t of trades) { // for of loop der går igennem trades
         if (!holdings[t.ticker_symbol]) { // undersøger om aktein findes i holdings
           holdings[t.ticker_symbol] = { quantity: 0, cost: 0 }; //hvis ikke opret med quantity og cost sat til 0
         }
 // Hvis det er en buy trade, opdaterer holdings med quantity og cost ved at lægge trade værdierne til holdings
-        if (t.trade_type === 'buy') {
-          holdings[t.ticker_symbol].quantity += t.quantity;
+        if (t.trade_type === 'buy') { // Hvis det er en buy-trade
+          holdings[t.ticker_symbol].quantity += t.quantity; // læg antallet til den eksisterende beholdning
           holdings[t.ticker_symbol].cost += t.total_price + (t.fee || 0); // ekstra sikkermed med || 0 
 // Hvis det er en sell trade, opdaterer holdings med quantity og cost ved at trække trade værdierne fra holdings
         } else if (t.trade_type === 'sell') {
             const holding = holdings[t.ticker_symbol];
-            if (holding.quantity > 0) {
-              const averageCostPerShare = holding.cost / holding.quantity;
+            if (holding.quantity > 0) { // tjek at der er aktier at sælge
+              const averageCostPerShare = holding.cost / holding.quantity; // beregn gennemsnitskostpris per aktie GAK
           
-              const saleRevenue = t.total_price - (t.fee || 0); // hvad vi fik ind for salget
+              const saleRevenue = t.total_price - (t.fee || 0); // Beregner hvad vi fik ind for salget
               const costBasis = averageCostPerShare * t.quantity; // hvad de solgte aktier kostede
-              const profitOrLoss = saleRevenue - costBasis; // gevinst/tab på salget
+              const profitOrLoss = saleRevenue - costBasis; // forskellen er profit eller tab
           
               realizedProfitUSD += profitOrLoss; // opdater samlet realiseret gevinst
           
@@ -101,9 +101,9 @@ router.get('/', async (req, res) => { // når bruger går til /dashboard
     
 
     // Top 5 sorteringer
-    const topByValue = [...allSecurities] // kopiere securities arrayet
-      .sort((a, b) => b.valueUSD - a.valueUSD) // sorterer efter værdi
-      .slice(0, 5) // tager de 5 største værdier
+    const topByValue = [...allSecurities] // kopierer securities arrayet med spread-operatoren ...
+      .sort((a, b) => b.valueUSD - a.valueUSD) // sorterer efter værdi med sort
+      .slice(0, 5) // tager de 5 største værdier. Slice opretter nyt arrey
       .map(s => ({ // map til at ændre hvert element i arrayet
         name: s.name, // name forbliver det samme
         portfolio: s.portfolio, // portfolio forbliver det samme
@@ -120,18 +120,18 @@ router.get('/', async (req, res) => { // når bruger går til /dashboard
       }));
 // data sendes til dashboard view
     res.render('dashboard', {
-      username: req.session.username,
-      totalValueDKK: totalValueDKK.toFixed(2),
-      realizedProfitDKK: realizedProfitDKK.toFixed(2),
-      unrealizedProfitDKK: unrealizedProfitDKK.toFixed(2),
-      topByValue,
-      topByProfit
+      username: req.session.username, // sender brugernavnet fra sessionen
+      totalValueDKK: totalValueDKK.toFixed(2),// samlet værdi i DKK, afrundet til 2 decimaler
+      realizedProfitDKK: realizedProfitDKK.toFixed(2), // realiseret profit i DKK, afrundet
+      unrealizedProfitDKK: unrealizedProfitDKK.toFixed(2), // urealiseret profit i DKK, afrundet
+      topByValue, // top 5 værdipapirer efter værdi
+      topByProfit // top 5 værdipapirer efter urealiseret profit
     });
 
   } catch (err) {
-    console.error('Error in dashboard route:', err);
-    res.status(500).send('Servererror rendering dahsboard.');
+    console.error('Error in dashboard route:', err); // logger fejl til konsollen
+    res.status(500).send('Servererror rendering dahsboard.');  // sender 500-fejl til klienten
   }
 });
 
-module.exports = router;
+module.exports = router; // eksporterer routeren, så den kan bruges i serveren (f.eks. i app.js)

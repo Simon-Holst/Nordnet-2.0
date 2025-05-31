@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
-require('dotenv').config();
+const fetch = require('node-fetch'); //Muliggør det at snakke med eksterne api'er
+require('dotenv').config(); // Til at læse env filer
 const { sql, poolPromise } = require('../SQL/database');
 // api nøgle
 const EXCHANGE_API_KEY = process.env.EXCHANGE_API_KEY;

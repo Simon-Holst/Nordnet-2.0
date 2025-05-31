@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const { sql, poolPromise } = require('../SQL/database.js');
-const { getCurrentStockPrice, getPreviousClosePrice } = require('../services/stockService');
-const { getExchangeRate } = require('../services/currencyService');
+const { sql, poolPromise } = require('../SQL/database.js'); // Server forbindelse
+const { getCurrentStockPrice, getPreviousClosePrice } = require('../services/stockService'); //Henter funktionerne fra services, priser
+const { getExchangeRate } = require('../services/currencyService'); //Henter funktionerne fra services, currency
 
 // Middleware til loginbeskyttelse gøres anderledes grundet API kald
-function requireLogin(req, res, next) {
+function requireLogin(req, res, next) { //  En middleware-funktion i Express
   if (!req.session || !req.session.userId) { // hvis man ikke er logget ind 
     return res.status(401).json({ message: 'Unauthorized' });
   }
-  next();
+  next(); // Hvis brugeren er logget ind, kalder vi next()
 }
 
 // Til at gemme value fra portfolio (snapshot funktion)
 async function snapshotPortfolioValue(portfolioId) {
-  const pool = await poolPromise;
+  const pool = await poolPromise; // server 
 // hent alle trades fra porteføljen
   const trades = await pool.request()
     .input('portfolioId', sql.Int, portfolioId)
@@ -38,8 +38,8 @@ async function snapshotPortfolioValue(portfolioId) {
     const { price } = await getCurrentStockPrice(ticker);
     totalValue += qty * price;
   }
-// finder dagens dato og opretter snapshot i databasen
-  const today = new Date().toISOString().split('T')[0];
+// finder dagens dato i formatet YYYY-MM-DD (fjerner klokkeslæt fra ISO-format) 
+  const today = new Date().toISOString().split('T')[0]; // - T for tidsseparatoren
 // indsætter snapshot i databasen som senere bruges til portfolios udvikling
   await pool.request()
     .input('portfolioId', sql.Int, portfolioId)
@@ -52,7 +52,7 @@ async function snapshotPortfolioValue(portfolioId) {
       )
       INSERT INTO PortfolioTracker.PortfolioSnapshots (portfolio_id, date, value)
       VALUES (@portfolioId, @date, @value)
-    `);
+    `); //ovenstående SQL sikrer, at der kun oprettes ét snapshot per dag per portefølje
 }
 
 //POST: Opret ny portefølje
@@ -64,11 +64,12 @@ router.post('/', requireLogin, async (req, res) => {
   try {
     const pool = await poolPromise;
     await pool.request()
-// indsætter porteføljen i databasen
+    // sender de nødvendige data som SQL-parametre
       .input('accountId', sql.Int, accountId)
       .input('name', sql.VarChar(255), name)
       .input('createdAt', sql.DateTime, createdAt)
       .input('userId', sql.Int, userId)
+      // SQL-forespørgsel: indsæt ny række i Portfolios-tabellen
       .query(`
         INSERT INTO PortfolioTracker.Portfolios (account_id, name, created_at, user_id)
         VALUES (@accountId, @name, @createdAt, @userId)
@@ -90,7 +91,7 @@ router.get('/', requireLogin, async (req, res) => { // requireLogin sikrer at br
 // Henter portfølje id, navn og oprettelsesdato fra databasen
 // og navnet på konto via join. Order by så senest oprettede portfolios kommer først.
     const result = await pool.request()
-      .input('userId', sql.Int, userId)
+      .input('userId', sql.Int, userId) // beskytter mod SQL injection og sætter parameter
       .query(`
         SELECT p.portfolio_id, p.name, p.created_at, a.name AS account_name
         FROM PortfolioTracker.Portfolios p

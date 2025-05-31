@@ -1,8 +1,8 @@
 const express = require("express")
 const app = express()
 const port = 3000
-const session = require("express-session")
-require('dotenv').config();
+const session = require("express-session")  // Importerer session middleware til at håndtere brugerlogin-sessioner
+require('dotenv').config(); // Indlæser fra .env-fil
 
 // Henter alle route filer
 const authRoutes = require("./Backend/routes/authRoutes.js")
@@ -20,10 +20,10 @@ app.use(express.urlencoded({ extended: true })); // Gør det muligt at læse dat
 
 //opret session middleware
 app.use(session({
-    secret: "Hemmelig_nøgle",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } 
+    secret: "Hemmelig_nøgle", // Bruges til at signere session-cookie
+    resave: false, // Gem ikke sessionen igen i databasen, hvis der ikke er sket nogen ændringer under requesten
+    saveUninitialized: true, // Gem en ny session, selvom du ikke har lagt noget data i den endnu
+    cookie: { secure: false } // Virker, selvom vi ikke bruger lås (HTTPS). Sat til undefined som udgangspunkt
 }))
 
 app.use(express.json())

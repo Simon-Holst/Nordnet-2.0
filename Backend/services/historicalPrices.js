@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
-require('dotenv').config();
+const fetch = require('node-fetch'); //Muliggør det at snakke med eksterne api'er
+require('dotenv').config();  // Til at læse env filer
 const API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
 // asynkron funktion til at hente historiske aktiekurser fra AlphaVantage tager ticker som parameter
 async function getHistoricalPrices(ticker) {

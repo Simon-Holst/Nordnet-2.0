@@ -29,7 +29,7 @@ I tilfælde af problmer:
 ```Mappestruktur:
 ├── Backend/              
 │   ├── models/           
-│   │   └── User.js
+│   │   └── User.js 
 │   ├── routes/           
 │   │   ├── accountsRoutes.js
 │   │   ├── authRoutes.js

@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
-require('dotenv').config();
+const fetch = require('node-fetch'); //Muliggør det at snakke med eksterne api'er
+require('dotenv').config();  // Til at læse env filer
 
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY;
 // funktion til at hente aktuel aktiekurs fra Finnhub

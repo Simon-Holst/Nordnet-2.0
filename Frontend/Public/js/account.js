@@ -10,14 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     populateAccountDropdown(); //henter konti til dropdown menuen
   });
   
-  //Modal handling
+  //Modal handling for alle modaler 
   function initModals() {
-    //modal kaldes to gange 1 til transaktion og 1 til konto
+    //modal kaldes to gange 1 til transaktion og 1 til konto. Gør det muligt at åbne og lukke modaler
     setupModal('toggleAccountForm', 'accountFormModal', 'closeAccountFormModalBtn');
     setupModal('toggleTransactionHistory', 'transactionsModal', 'closeTransactionsModalBtn');
   }
   
-  function setupModal(openId, modalId, closeId) {
+  function setupModal(openId, modalId, closeId) { // Sætter modal op og gør det muligt at åbne og lukke
     //henter knapperne og modal
     const openBtn = document.getElementById(openId);
     const modal = document.getElementById(modalId);
@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener("click", (e) => {
       if (e.target === modal) modal.style.display = "none";
     });
-  }
+  } // Kun når baggrunden (modal) bliver klikket, lukkes modal. Modal content er selve modalet
   
-  // Account form for funktion
+  // Håndterer oprettelse af ny konto via formular
   function initAccountFormHandler() {
     const form = document.getElementById('newAccountForm'); //henter formularen
     if (!form) return; // hvis formularen ikke findes, stop funktionen
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // looper gennem alle konti og tilføjer dem til tabellen
   // Hvis Closed_at er null, så er kontoen åben, ellers er den lukket
   //
-      accounts.forEach(acc => {
+      accounts.forEach(acc => { // opretter tabel med innerHTML
         table.innerHTML += `
           <tr>
             <td>${acc.name}</td>
